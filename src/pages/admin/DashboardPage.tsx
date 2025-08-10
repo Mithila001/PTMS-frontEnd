@@ -20,13 +20,13 @@ const DashboardPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-gray-500">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main area */}
       <div className="flex-1 flex flex-col">
-        <main className="flex-1 overflow-auto p-6 md:p-8">
+        <main className="flex-1 overflow-auto p-6 md:p-1">
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route index element={<OverviewPage />} />
