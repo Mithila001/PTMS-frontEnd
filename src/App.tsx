@@ -8,6 +8,8 @@ import ShowData from "./pages/showData";
 import DisplayBusDataPage from "./pages/DisplayBusDataPage";
 import DashboardPage from "./pages/admin/DashboardPage";
 import BusManagementPage from "./pages/admin/BusManagementPage";
+import BusMoreInfoPage from "./pages/admin/BusMoreInfoPage";
+import RegisterNewBusPage from "./pages/admin/RegisterNewBusPage";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path="/showData" element={<ShowData />} />
           <Route path="/pages/FormPage" element={<FormPage />} />
           <Route path="/showBuses" element={<DisplayBusDataPage />} />
+          <Route path="/admin/buses/:id" element={<BusMoreInfoPage />} />
+          <Route path="/admin/buses/addBus" element={<RegisterNewBusPage />} />
           {/* Add other routes here */}
           <Route
             path="*"

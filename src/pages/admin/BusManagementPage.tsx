@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { Bus } from "../../types/bus";
 import { getBuses } from "../../api/busService";
 import SearchAndFilter from "../../components/organisms/SearchAndFilter";
+import PrimaryButton from "../../components/atoms/PrimaryButton";
 
 const BusManagementPage: React.FC = () => {
   const [buses, setBuses] = useState<Bus[]>([]);
@@ -51,7 +52,7 @@ const BusManagementPage: React.FC = () => {
   }
 
   const handleViewBus = (busId: number) => {
-    alert(`Bus ID: ${busId}`);
+    window.location.href = `/admin/buses/${busId}`;
   };
 
   // Get unique fuel types for the dropdown filter
@@ -62,18 +63,27 @@ const BusManagementPage: React.FC = () => {
     "px-5 py-5 border-b-2 border-gray-500 text-left text-xs font-bold text-gray-700 uppercase tracking-wider";
   const tdStyles = "px-5 py-2 border-b border-gray-200 text-sm";
 
+  const handleAddBus = (): void => {
+    window.location.href = "/admin/buses/addBus";
+  };
+
   return (
-    <div className="container mx-auto mt-8 p-4 bg-white shadow-lg rounded-lg">
-      <div className="flex justify-between items-center mb-6 border-b pb-4">
-        <h1 className="text-3xl font-bold text-gray-800">Bus Data</h1>
-        <div className="w-1/2">
+    <div className="container mx-auto mt-2 p-2 bg-white shadow-lg rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-2 bg-white border rounded-lg shadow-sm mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Bus Data</h1>
+          <p className="text-gray-600 mt-1">Manage your fleet information</p>
+        </div>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <SearchAndFilter
             onFilterChange={setFilters}
             filterOptions={fuelTypes}
             filterLabel="Filter By"
           />
+          <PrimaryButton onClick={handleAddBus}>Add Bus</PrimaryButton>
         </div>
       </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full leading-normal">
           <thead className="bg-gray-100">
