@@ -1,0 +1,141 @@
+import React, { useEffect, useState } from "react";
+import type { Route } from "../../../types/route";
+import { getAllRoutes } from "../../../api/routeService";
+import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
+import PrimaryButton from "../../../components/atoms/PrimaryButton";
+
+const RoutesPage: React.FC = () => {
+  const [routes, setRoutes] = useState<Route[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
+  const [filteredRoutes, setFilteredRoutes] = useState<Route[]>([]);
+
+  // Fetch all routes from the backend API when the component mounts.
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const data = await getAllRoutes();
+        setRoutes(data);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError("An unknown error occurred while fetching routes");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRoutes();
+  }, []);
+
+  // Filter the routes based on the search term.
+  useEffect(() => {
+    let newFilteredRoutes = routes.filter((route) => {
+      const matchesSearchTerm = route.routeNumber
+        .toLowerCase()
+        .includes(filters.searchTerm.toLowerCase());
+
+      // For now, there are no filter options, so this part is simplified.
+      const matchesFilter = true;
+
+      return matchesSearchTerm && matchesFilter;
+    });
+
+    setFilteredRoutes(newFilteredRoutes);
+  }, [routes, filters]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  const handleViewRoute = (routeId: number) => {
+    // You'll need to create a new page for this, similar to BusMoreInfoPage.tsx
+    window.location.href = `/admin/routes/${routeId}`;
+  };
+
+  const handleAddRoute = (): void => {
+    // You'll need to create a new page for this, similar to RegisterNewBusPage.tsx
+    window.location.href = "/admin/routes/addRoutes";
+  };
+
+  // Define styles for table headers and cells
+  const thStyles =
+    "px-5 py-5 border-b-2 border-gray-500 text-left text-xs font-bold text-gray-700 uppercase tracking-wider";
+  const tdStyles = "px-5 py-2 border-b border-gray-200 text-sm";
+
+  return (
+    <div className="container mx-auto mt-2 p-2 bg-white shadow-lg rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-2 bg-white border rounded-lg shadow-sm mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Route Management</h1>
+          <p className="text-gray-600 mt-1">Manage and view bus routes</p>
+        </div>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <SearchAndFilter
+            onFilterChange={setFilters}
+            filterOptions={[]} // No dropdown filter for now
+            filterLabel="Filter By"
+          />
+          <PrimaryButton onClick={handleAddRoute}>Add Route</PrimaryButton>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full leading-normal">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className={thStyles}>ID</th>
+              <th className={thStyles}>Route Number</th>
+              <th className={thStyles}>Origin</th>
+              <th className={thStyles}>Destination</th>
+              <th className={thStyles}>Major Stops</th>
+              <th className={thStyles}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRoutes.map((route, index) => (
+              <tr
+                key={route.id}
+                className={`${
+                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                } hover:bg-gray-100 transition duration-200 ease-in-out`}
+              >
+                <td className={tdStyles}>{route.id}</td>
+                <td className={tdStyles}>{route.routeNumber}</td>
+                <td className={tdStyles}>{route.origin}</td>
+                <td className={tdStyles}>{route.destination}</td>
+                <td className={tdStyles}>
+                  {route.majorStops && route.majorStops.length > 0 ? (
+                    <ul className="list-disc list-inside">
+                      {route.majorStops.map((stop, stopIndex) => (
+                        <li key={stopIndex}>{stop}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    "N/A"
+                  )}
+                </td>
+                <td className={tdStyles}>
+                  <button
+                    onClick={() => handleViewRoute(route.id)}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-6 rounded-full text-xs"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default RoutesPage;

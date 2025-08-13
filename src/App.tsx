@@ -10,6 +10,8 @@ import DashboardPage from "./pages/admin/DashboardPage";
 import BusManagementPage from "./pages/admin/BusManagementPage";
 import BusMoreInfoPage from "./pages/admin/BusMoreInfoPage";
 import RegisterNewBusPage from "./pages/admin/RegisterNewBusPage";
+import RouteMoreInfoPage from "./pages/admin/routeManagment/RouteMoreInfoPage";
+import AddRoutePage from "./pages/admin/routeManagment/AddRoutePage";
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
           <Route path="/showBuses" element={<DisplayBusDataPage />} />
           <Route path="/admin/buses/:id" element={<BusMoreInfoPage />} />
           <Route path="/admin/buses/addBus" element={<RegisterNewBusPage />} />
+          <Route path="admin/routes/:id" element={<RouteMoreInfoPage />} />
+          <Route path="admin/routes/addRoutes" element={<AddRoutePage />} />
           {/* Add other routes here */}
           <Route
             path="*"
