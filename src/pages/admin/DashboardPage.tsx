@@ -9,6 +9,7 @@ const DriversPage = lazy(() => import("./DriversPage"));
 const RoutesPage = lazy(() => import("./routeManagment/RoutesPage"));
 const ReportsPage = lazy(() => import("./ReportsPage"));
 const SettingsPage = lazy(() => import("./SettingsPage"));
+const EmployeeManagementPage = lazy(() => import("./employeeManagement/EmployeeManagementPage"));
 
 const LoadingFallback: React.FC = () => (
   <div className="p-8">
@@ -32,7 +33,7 @@ const DashboardPage: React.FC = () => {
               <Route index element={<OverviewPage />} />
               <Route path="admin/overview" element={<OverviewPage />} />
               <Route path="admin/buses" element={<BusManagementPage />} />
-              <Route path="admin/drivers" element={<DriversPage />} />
+              <Route path="admin/employees" element={<EmployeeManagementPage />} />
               <Route path="admin/routes" element={<RoutesPage />} />
               <Route path="admin/reports" element={<ReportsPage />} />
               <Route path="admin/settings" element={<SettingsPage />} />
