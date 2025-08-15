@@ -5,6 +5,9 @@ import type { Route } from "../../../types/route";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
+import TextInput from "../../../components/atoms/TextInput";
+import TextArea from "../../../components/atoms/TextArea";
+import PrimaryButton from "../../../components/atoms/PrimaryButton";
 
 const RouteMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -171,73 +174,50 @@ const RouteMoreInfoPage: React.FC = () => {
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             {/* Route Number */}
-            <div className="flex flex-col">
-              <label htmlFor="routeNumber" className="text-gray-600 font-semibold mb-1">
-                Route Number
-              </label>
-              <input
-                id="routeNumber"
-                type="text"
-                value={route.routeNumber}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
-            {/* Origin */}
-            <div className="flex flex-col">
-              <label htmlFor="origin" className="text-gray-600 font-semibold mb-1">
-                Origin
-              </label>
-              <input
-                id="origin"
-                type="text"
-                value={route.origin}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
-            {/* Destination */}
-            <div className="flex flex-col">
-              <label htmlFor="destination" className="text-gray-600 font-semibold mb-1">
-                Destination
-              </label>
-              <input
-                id="destination"
-                type="text"
-                value={route.destination}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
-            {/* Major Stops */}
-            <div className="flex flex-col md:col-span-2">
-              <label htmlFor="majorStops" className="text-gray-600 font-semibold mb-1">
-                Major Stops (one per line)
-              </label>
-              <textarea
-                id="majorStops"
-                value={route.majorStops?.join("\n") || ""}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none min-h-[100px]"
-              />
-            </div>
+            <TextInput
+              id="routeNumber"
+              label="Route Number"
+              value={route.routeNumber}
+              onChange={handleInputChange}
+            />
+
+            <TextInput
+              id="origin"
+              label="Origin"
+              value={route.origin}
+              onChange={handleInputChange}
+            />
+
+            <TextInput
+              id="destination"
+              label="Destination"
+              value={route.destination}
+              onChange={handleInputChange}
+            />
+
+            <TextArea
+              id="majorStops"
+              label="Major Stops (one per line)"
+              value={route.majorStops?.join("\n") || ""}
+              onChange={handleInputChange}
+            />
           </form>
         </div>
 
         {/* Buttons */}
         <div className="mt-8 pt-4 border-t-2 border-gray-200 flex justify-end space-x-4 h-16 items-center">
-          <button
+          <PrimaryButton
             onClick={handleDelete}
             className="bg-red-600 text-white font-bold py-2 px-6 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
           >
             Delete
-          </button>
-          <button
+          </PrimaryButton>
+          <PrimaryButton
             onClick={handleSave}
             className="bg-green-600 text-white font-bold py-2 px-6 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
             Save
-          </button>
+          </PrimaryButton>
         </div>
       </div>
 

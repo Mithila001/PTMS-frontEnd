@@ -7,11 +7,12 @@ import FormPage from "./pages/FormPage";
 import ShowData from "./pages/showData";
 import DisplayBusDataPage from "./pages/DisplayBusDataPage";
 import DashboardPage from "./pages/admin/DashboardPage";
-import BusManagementPage from "./pages/admin/BusManagementPage";
-import BusMoreInfoPage from "./pages/admin/BusMoreInfoPage";
-import RegisterNewBusPage from "./pages/admin/RegisterNewBusPage";
+import BusManagementPage from "./pages/admin/busManagement/BusManagementPage";
+import BusMoreInfoPage from "./pages/admin/busManagement/BusMoreInfoPage";
+import RegisterNewBusPage from "./pages/admin/busManagement/RegisterNewBusPage";
 import RouteMoreInfoPage from "./pages/admin/routeManagment/RouteMoreInfoPage";
 import AddRoutePage from "./pages/admin/routeManagment/AddRoutePage";
+import DriverMoreInfoPage from "./pages/admin/employeeManagement/DriverMoreInfoPage";
 
 function App() {
   return (
@@ -26,8 +27,9 @@ function App() {
           <Route path="/showBuses" element={<DisplayBusDataPage />} />
           <Route path="/admin/buses/:id" element={<BusMoreInfoPage />} />
           <Route path="/admin/buses/addBus" element={<RegisterNewBusPage />} />
-          <Route path="admin/routes/:id" element={<RouteMoreInfoPage />} />
-          <Route path="admin/routes/addRoutes" element={<AddRoutePage />} />
+          <Route path="/admin/routes/:id" element={<RouteMoreInfoPage />} />
+          <Route path="/admin/routes/addRoutes" element={<AddRoutePage />} />
+          <Route path="/admin/busManagement/driverInfo" element={<DriverMoreInfoPage />} />
           {/* Add other routes here */}
           <Route
             path="*"

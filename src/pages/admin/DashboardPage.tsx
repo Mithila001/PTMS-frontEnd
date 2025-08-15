@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "../../components/shared/Sidebar";
 
 const OverviewPage = lazy(() => import("./OverviewPage"));
-const BusManagementPage = lazy(() => import("./BusManagementPage"));
+const BusManagementPage = lazy(() => import("./busManagement/BusManagementPage"));
 const DriversPage = lazy(() => import("./DriversPage"));
 const RoutesPage = lazy(() => import("./routeManagment/RoutesPage"));
 const ReportsPage = lazy(() => import("./ReportsPage"));

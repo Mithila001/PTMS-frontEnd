@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import type { Route } from "../../../types/route";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
+import TextInput from "../../../components/atoms/TextInput";
+import { createRoute } from "../../../api/routeService";
+import PrimaryButton from "../../../components/atoms/PrimaryButton";
+import TextArea from "../../../components/atoms/TextArea";
 
 const emptyRoute: Omit<Route, "id"> = {
   routeNumber: "",
@@ -33,7 +37,7 @@ const AddRoutePage: React.FC = () => {
         majorStops: route.majorStops.map((stop) => stop.trim()).filter((stop) => stop.length > 0),
       };
 
-      await addRoute(routeToSave);
+      await createRoute(routeToSave);
       console.log("Route created successfully.");
       alert("Route created successfully! 👍");
       setRoute(emptyRoute); // Reset form after successful submission
@@ -77,66 +81,46 @@ const AddRoutePage: React.FC = () => {
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             {/* Route Number */}
-            <div className="flex flex-col">
-              <label htmlFor="routeNumber" className="text-gray-600 font-semibold mb-1">
-                Route Number
-              </label>
-              <input
-                id="routeNumber"
-                type="text"
-                value={route.routeNumber}
-                onChange={handleInputChange}
-                className="p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="routeNumber"
+              label="Route Number"
+              value={route.routeNumber}
+              onChange={handleInputChange}
+            />
+
             {/* Origin */}
-            <div className="flex flex-col">
-              <label htmlFor="origin" className="text-gray-600 font-semibold mb-1">
-                Origin
-              </label>
-              <input
-                id="origin"
-                type="text"
-                value={route.origin}
-                onChange={handleInputChange}
-                className="p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="origin"
+              label="Origin"
+              value={route.origin}
+              onChange={handleInputChange}
+            />
+
             {/* Destination */}
-            <div className="flex flex-col">
-              <label htmlFor="destination" className="text-gray-600 font-semibold mb-1">
-                Destination
-              </label>
-              <input
-                id="destination"
-                type="text"
-                value={route.destination}
-                onChange={handleInputChange}
-                className="p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="destination"
+              label="Destination"
+              value={route.destination}
+              onChange={handleInputChange}
+            />
+
             {/* Major Stops */}
-            <div className="flex flex-col md:col-span-2">
-              <label htmlFor="majorStops" className="text-gray-600 font-semibold mb-1">
-                Major Stops (one per line)
-              </label>
-              <textarea
-                id="majorStops"
-                value={route.majorStops?.join("\n") || ""}
-                onChange={handleInputChange}
-                className="p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none min-h-[100px]"
-              />
-            </div>
+            <TextArea
+              id="majorStops"
+              label="Major Stops (one per line)"
+              value={route.majorStops?.join("\n") || ""}
+              onChange={handleInputChange}
+            />
           </form>
         </div>
         {error && <ErrorAlert errorMessage={error} />}
         <div className="mt-8 pt-4 border-t-2 border-gray-200 flex justify-end space-x-4 h-16 items-center">
-          <button
+          <PrimaryButton
             onClick={handleSave}
             className="bg-green-600 text-white font-bold py-2 px-6 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
             Create Route
-          </button>
+          </PrimaryButton>
         </div>
       </div>
       <div className="w-80 bg-gray-200 rounded-lg shadow-xl p-8 flex items-center justify-center text-center">
@@ -147,11 +131,3 @@ const AddRoutePage: React.FC = () => {
 };
 
 export default AddRoutePage;
-function addRoute(routeToSave: {
-  majorStops: string[];
-  routeNumber: string;
-  origin: string;
-  destination: string;
-}) {
-  throw new Error("Function not implemented.");
-}

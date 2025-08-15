@@ -3,6 +3,8 @@ import type { Route } from "../../../types/route";
 import { getAllRoutes } from "../../../api/routeService";
 import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
+import type { Column } from "../../../components/molecules/DataTable";
+import DataTable from "../../../components/molecules/DataTable";
 
 const RoutesPage: React.FC = () => {
   const [routes, setRoutes] = useState<Route[]>([]);
@@ -64,10 +66,38 @@ const RoutesPage: React.FC = () => {
     window.location.href = "/admin/routes/addRoutes";
   };
 
-  // Define styles for table headers and cells
-  const thStyles =
-    "px-5 py-5 border-b-2 border-gray-500 text-left text-xs font-bold text-gray-700 uppercase tracking-wider";
-  const tdStyles = "px-5 py-2 border-b border-gray-200 text-sm";
+  const routeColumns: Column<Route>[] = [
+    { header: "ID", key: "id" },
+    { header: "Route Number", key: "routeNumber" },
+    { header: "Origin", key: "origin" },
+    { header: "Destination", key: "destination" },
+    {
+      header: "Major Stops",
+      key: "majorStops",
+      render: (route) =>
+        route.majorStops && route.majorStops.length > 0 ? (
+          <ul className="list-disc list-inside">
+            {route.majorStops.map((stop, index) => (
+              <li key={index}>{stop}</li>
+            ))}
+          </ul>
+        ) : (
+          "N/A"
+        ),
+    },
+    {
+      header: "", // Empty header for the action column
+      key: "actions",
+      render: (route) => (
+        <button
+          onClick={() => handleViewRoute(route.id)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-6 rounded-full text-xs"
+        >
+          View
+        </button>
+      ),
+    },
+  ];
 
   return (
     <div className="container mx-auto mt-2 p-2 bg-white shadow-lg rounded-lg">
@@ -85,55 +115,7 @@ const RoutesPage: React.FC = () => {
           <PrimaryButton onClick={handleAddRoute}>Add Route</PrimaryButton>
         </div>
       </div>
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full leading-normal">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className={thStyles}>ID</th>
-              <th className={thStyles}>Route Number</th>
-              <th className={thStyles}>Origin</th>
-              <th className={thStyles}>Destination</th>
-              <th className={thStyles}>Major Stops</th>
-              <th className={thStyles}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRoutes.map((route, index) => (
-              <tr
-                key={route.id}
-                className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                } hover:bg-gray-100 transition duration-200 ease-in-out`}
-              >
-                <td className={tdStyles}>{route.id}</td>
-                <td className={tdStyles}>{route.routeNumber}</td>
-                <td className={tdStyles}>{route.origin}</td>
-                <td className={tdStyles}>{route.destination}</td>
-                <td className={tdStyles}>
-                  {route.majorStops && route.majorStops.length > 0 ? (
-                    <ul className="list-disc list-inside">
-                      {route.majorStops.map((stop, stopIndex) => (
-                        <li key={stopIndex}>{stop}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    "N/A"
-                  )}
-                </td>
-                <td className={tdStyles}>
-                  <button
-                    onClick={() => handleViewRoute(route.id)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-6 rounded-full text-xs"
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable data={filteredRoutes} columns={routeColumns} />
     </div>
   );
 };

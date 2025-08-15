@@ -39,14 +39,11 @@ const EmployeeManagementPage: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleAddEmployee = () => {
-    // Navigate to the add employee form page
-    console.log(`Add new ${activeTab} employee`);
-  };
+  const handleAddEmployee = () => {};
 
   const handleViewDetails = (id: number) => {
     // Navigate to the details page
-    console.log(`Viewing details for employee with ID: ${id}`);
+    window.location.href = `/admin/busManagement/driverInfo?id=${id}`;
   };
 
   const commonHeaderStyles =
@@ -110,10 +107,10 @@ const EmployeeManagementPage: React.FC = () => {
       {/* Tab Content */}
       <div className={contentContainerStyles}>
         {activeTab === "drivers" && (
-          <EmployeeTable employees={drivers} onViewDetails={handleViewDetails} />
+          <EmployeeTable employees={drivers} onViewDetails={(id) => handleViewDetails(id)} />
         )}
         {activeTab === "conductors" && (
-          <EmployeeTable employees={conductors} onViewDetails={handleViewDetails} />
+          <EmployeeTable employees={conductors} onViewDetails={(id) => handleViewDetails(id)} />
         )}
       </div>
     </div>
