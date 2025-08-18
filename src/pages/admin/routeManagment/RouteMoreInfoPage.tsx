@@ -10,18 +10,7 @@ import TextArea from "../../../components/atoms/TextArea";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import L from "leaflet";
-
-const parseWKTLineString = (wkt: string | undefined) => {
-  if (!wkt) {
-    return [];
-  }
-  const coordinatesString = wkt.substring(wkt.indexOf("(") + 1, wkt.indexOf(")")).trim();
-  const pairs = coordinatesString.split(",");
-  return pairs.map((pair) => {
-    const coords = pair.trim().split(" ").map(Number);
-    return [coords[1], coords[0]] as [number, number]; // Leaflet uses [lat, lng]
-  });
-};
+import { parseWKTLineString } from "../../../utils/wktParser";
 
 const RouteMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +23,7 @@ const RouteMoreInfoPage: React.FC = () => {
 
   useEffect(() => {
     console.log("ID:", id);
+    setLoading(true);
     if (id) {
       const parsedId = Number(id);
       setRouteId(parsedId);
@@ -43,7 +33,6 @@ const RouteMoreInfoPage: React.FC = () => {
         return;
       }
 
-      setLoading(true);
       setError(null);
       getRouteById(parsedId)
         .then((routeData) => {
@@ -51,7 +40,8 @@ const RouteMoreInfoPage: React.FC = () => {
             setRoute(routeData);
             routeBackup.current = routeData;
             if (routeData.routePath) {
-              setRoutePath(parseWKTLineString(routeData.routePath));
+              const [parsedPath, _] = parseWKTLineString(routeData.routePath);
+              setRoutePath(parsedPath);
             }
             console.log("Route data fetched successfully:", routeData);
           } else {
@@ -147,7 +137,7 @@ const RouteMoreInfoPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-screen">
         <ErrorAlert errorMessage={error} />
       </div>
     );
@@ -179,6 +169,23 @@ const RouteMoreInfoPage: React.FC = () => {
         [id]: value,
       };
     });
+  };
+
+  // This function is triggered when the route path is updated in the form
+  const handleRoutePathChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+    handleInputChange(e); // Update the state of the route object
+
+    const [parsedPath, isValid] = parseWKTLineString(value);
+
+    if (isValid) {
+      setRoutePath(parsedPath);
+      setError(null);
+      //setIsWktValid(true);
+    } else {
+      setError("Invalid WKT format. Please ensure it is a valid LINESTRING. 😥");
+      //setIsWktValid(false);
+    }
   };
 
   return (
@@ -219,7 +226,7 @@ const RouteMoreInfoPage: React.FC = () => {
               id="routePath"
               label="Route Path (WKT)"
               value={route.routePath || ""}
-              onChange={handleInputChange}
+              onChange={handleRoutePathChange}
               className="col-span-1 md:col-span-2"
             />
           </form>
