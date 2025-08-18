@@ -11,6 +11,7 @@ import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import L from "leaflet";
 import { parseWKTLineString } from "../../../utils/wktParser";
+import { useToast } from "../../../contexts/ToastContext";
 
 const RouteMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,8 +22,10 @@ const RouteMoreInfoPage: React.FC = () => {
   const [routeId, setRouteId] = useState<number | null>(null);
   const [routePath, setRoutePath] = useState<L.LatLngExpression[]>([]);
 
+  const { showToast } = useToast();
+
   useEffect(() => {
-    console.log("ID:", id);
+    //console.log("ID:", id);
     setLoading(true);
     if (id) {
       const parsedId = Number(id);
@@ -43,7 +46,7 @@ const RouteMoreInfoPage: React.FC = () => {
               const [parsedPath, _] = parseWKTLineString(routeData.routePath);
               setRoutePath(parsedPath);
             }
-            console.log("Route data fetched successfully:", routeData);
+            //console.log("Route data fetched successfully:", routeData);
           } else {
             setError(`No route found with ID: ${id}`);
           }
@@ -88,15 +91,15 @@ const RouteMoreInfoPage: React.FC = () => {
     }
 
     if (comparison.changedLogs.length > 0) {
-      console.log("Route details have been changed. The following updates will be saved:");
+      //console.log("Route details have been changed. The following updates will be saved:");
       comparison.changedLogs.forEach((log) => {
-        console.log(`- Property '${log.key}' changed from '${log.oldValue}' to '${log.newValue}'.`);
+        //console.log(`- Property '${log.key}' changed from '${log.oldValue}' to '${log.newValue}'.`);
       });
     }
 
     try {
       await updateRoute(routeId, route);
-      console.log("Route details updated successfully.");
+      //console.log("Route details updated successfully.");
       routeBackup.current = route;
     } catch (error) {
       console.error("Failed to save route details:", error);
@@ -123,7 +126,7 @@ const RouteMoreInfoPage: React.FC = () => {
     } else if (isConfirmed && (routeId === null || isNaN(routeId))) {
       alert("Invalid route ID for deletion. 😢");
     } else {
-      console.log("Route deletion cancelled.");
+      //console.log("Route deletion cancelled.");
     }
   };
 
@@ -136,11 +139,7 @@ const RouteMoreInfoPage: React.FC = () => {
   }
 
   if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <ErrorAlert errorMessage={error} />
-      </div>
-    );
+    showToast("Invalid WKT format. Please ensure it is a valid LINESTRING. 😥", "error");
   }
 
   if (!route) {
@@ -183,7 +182,8 @@ const RouteMoreInfoPage: React.FC = () => {
       setError(null);
       //setIsWktValid(true);
     } else {
-      setError("Invalid WKT format. Please ensure it is a valid LINESTRING. 😥");
+      showToast("Invalid WKT format. Please ensure it is a valid LINESTRING. 😥", "error");
+      console.log("-----------------Invalid WKT format:", value);
       //setIsWktValid(false);
     }
   };

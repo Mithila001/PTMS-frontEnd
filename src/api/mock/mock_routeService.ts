@@ -54,7 +54,7 @@ export const createRouteMock = async (newRoute: Omit<Route, "id">): Promise<Rout
       };
 
       mockRoutes.push(createdRoute);
-      console.log("Mock API: Route created successfully.", createdRoute);
+      //console.log("Mock API: Route created successfully.", createdRoute);
       resolve(createdRoute);
     }, 500);
   });
@@ -69,7 +69,7 @@ export const getRouteById = async (id: number): Promise<Route | null> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       const route = mockRoutes.find((r) => r.id === id);
-      console.log(`Mock API: Fetched route with ID ${id}.`, route);
+      //console.log(`Mock API: Fetched route with ID ${id}.`, route);
       resolve(route || null);
     }, 300);
   });
@@ -87,7 +87,7 @@ export const updateRoute = async (id: number, updatedData: Route): Promise<Route
       const index = mockRoutes.findIndex((r) => r.id === id);
       if (index !== -1) {
         mockRoutes[index] = { ...mockRoutes[index], ...updatedData };
-        console.log(`Mock API: Route with ID ${id} updated.`);
+        //console.log(`Mock API: Route with ID ${id} updated.`);
         resolve(mockRoutes[index]);
       } else {
         reject(new Error(`Route with ID ${id} not found.`));
@@ -110,7 +110,7 @@ export const deleteRoute = async (id: number): Promise<void> => {
       if (filteredRoutes.length < initialLength) {
         // You'll need to re-assign the filtered array to the mockRoutes array in a real scenario to "persist" the changes.
         // For this example, we'll just log and assume a successful deletion.
-        console.log(`Mock API: Route with ID ${id} deleted.`);
+        //(`Mock API: Route with ID ${id} deleted.`);
         resolve();
       } else {
         reject(new Error(`Route with ID ${id} not found.`));

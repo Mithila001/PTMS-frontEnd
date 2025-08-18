@@ -26,7 +26,7 @@ export const getRouteById = async (id: number): Promise<Route> => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data: Route = await response.json();
-    console.log(`Fetched route with ID ${id}:`, data);
+    //console.log(`Fetched route with ID ${id}:`, data);
     return data;
   } catch (error) {
     console.error(`Failed to fetch route with id ${id}:`, error);
