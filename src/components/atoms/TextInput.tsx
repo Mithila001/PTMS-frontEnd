@@ -5,8 +5,9 @@ type TextInputProps = {
   label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: "text" | "email" | "password" | "number";
+  type?: "text" | "email" | "password" | "number" | "date" | "tel";
   className?: string;
+  readonly?: boolean;
 };
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -16,6 +17,7 @@ const TextInput: React.FC<TextInputProps> = ({
   onChange,
   type = "text",
   className = "",
+  readonly,
 }) => {
   return (
     <div className="flex flex-col">
@@ -28,6 +30,7 @@ const TextInput: React.FC<TextInputProps> = ({
         value={value}
         onChange={onChange}
         className={`p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none ${className}`}
+        readOnly={readonly}
       />
     </div>
   );

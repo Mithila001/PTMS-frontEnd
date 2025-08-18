@@ -6,6 +6,8 @@ import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import type { Conductor, Driver } from "../../../types/employee";
 import { getAllDrivers, getAllConductors } from "../../../api/employeeService";
+import type { Column } from "../../../components/molecules/DataTable";
+import DataTable from "../../../components/molecules/DataTable";
 
 const EmployeeManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"drivers" | "conductors">("drivers");
@@ -13,6 +15,9 @@ const EmployeeManagementPage: React.FC = () => {
   const [conductors, setConductors] = useState<Conductor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [filteredDrivers, setFilteredDrivers] = useState<Driver[]>([]);
+  const [filteredConductors, setFilteredConductors] = useState<Conductor[]>([]);
+  const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
 
   // useEffect hook to fetch data when the component mounts
   useEffect(() => {
@@ -39,12 +44,45 @@ const EmployeeManagementPage: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleAddEmployee = () => {};
-
-  const handleViewDetails = (id: number) => {
-    // Navigate to the details page
-    window.location.href = `/admin/busManagement/driverInfo?id=${id}`;
+  const handleAddEmployee = () => {
+    // Navigate to the Add Employee page
+    window.location.href = "/admin/employeeManagement/addEmployee";
   };
+
+  const handleViewDriver = (id: number) => {
+    // Navigate to the details page
+
+    window.location.href = `/admin/employeeManagement/driverInfo/${id}`;
+  };
+
+  useEffect(() => {
+    let newFilteredDrivers = drivers.filter((driver) => {
+      const matchesSearchTerm = driver.firstName
+        .toLowerCase()
+        .includes(filters.searchTerm.toLowerCase());
+
+      const matchesFilter = !filters.selectedFilter || driver.firstName === filters.selectedFilter;
+
+      return matchesSearchTerm && matchesFilter;
+    });
+
+    setFilteredDrivers(newFilteredDrivers);
+  }, [drivers, filters]);
+
+  useEffect(() => {
+    let newFilteredConductors = conductors.filter((conductor) => {
+      const matchesSearchTerm = conductor.firstName
+        .toLowerCase()
+        .includes(filters.searchTerm.toLowerCase());
+
+      const matchesFilter =
+        !filters.selectedFilter || conductor.firstName === filters.selectedFilter;
+
+      return matchesSearchTerm && matchesFilter;
+    });
+
+    setFilteredConductors(newFilteredConductors);
+  }, [conductors, filters]);
 
   const commonHeaderStyles =
     "flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-2 bg-white border rounded-lg shadow-sm mb-6";
@@ -66,8 +104,60 @@ const EmployeeManagementPage: React.FC = () => {
     return <ErrorAlert errorMessage={error} />;
   }
 
+  const driverColumns: Column<Driver>[] = [
+    { header: "ID", key: "id" },
+    { header: "NIC No.", key: "nicNumber" },
+    { header: "First Name", key: "firstName" },
+    { header: "Last Name", key: "lastName" },
+    { header: "Contact No.", key: "contactNumber" },
+    { header: "Date Joined", key: "dateJoined" },
+    {
+      header: "Current Employee",
+      key: "isCurrentEmployee",
+      render: (driver) => (driver.isCurrentEmployee ? "Yes" : "No"),
+    },
+    {
+      header: "Actions",
+      key: "actions",
+      render: (driver) => (
+        <button
+          onClick={() => handleViewDriver(driver.id)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-6 rounded-full text-xs"
+        >
+          View
+        </button>
+      ),
+    },
+  ];
+
+  const conductorColumns: Column<Conductor>[] = [
+    { header: "ID", key: "id" },
+    { header: "NIC No.", key: "nicNumber" },
+    { header: "First Name", key: "firstName" },
+    { header: "Last Name", key: "lastName" },
+    { header: "Contact No.", key: "contactNumber" },
+    { header: "Date Joined", key: "dateJoined" },
+    {
+      header: "Current Employee",
+      key: "isCurrentEmployee",
+      render: (driver) => (driver.isCurrentEmployee ? "Yes" : "No"),
+    },
+    {
+      header: "Actions",
+      key: "actions",
+      render: (driver) => (
+        <button
+          onClick={() => handleViewDriver(driver.id)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-6 rounded-full text-xs"
+        >
+          View
+        </button>
+      ),
+    },
+  ];
+
   return (
-    <div className="container mx-auto mt-2 p-2">
+    <div className="container mx-auto mt-2 p-2 bg-white">
       {/* Page Header */}
       <div className={commonHeaderStyles}>
         <div>
@@ -106,11 +196,9 @@ const EmployeeManagementPage: React.FC = () => {
 
       {/* Tab Content */}
       <div className={contentContainerStyles}>
-        {activeTab === "drivers" && (
-          <EmployeeTable employees={drivers} onViewDetails={(id) => handleViewDetails(id)} />
-        )}
+        {activeTab === "drivers" && <DataTable data={filteredDrivers} columns={driverColumns} />}
         {activeTab === "conductors" && (
-          <EmployeeTable employees={conductors} onViewDetails={(id) => handleViewDetails(id)} />
+          <DataTable data={filteredConductors} columns={conductorColumns} />
         )}
       </div>
     </div>

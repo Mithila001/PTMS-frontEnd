@@ -8,6 +8,9 @@ import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import isEqual from "lodash.isequal";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects"; // Assuming this is the correct path
+import TextInput from "../../../components/atoms/TextInput";
+import Checkbox from "../../../components/atoms/Checkbox";
+import PrimaryButton from "../../../components/atoms/PrimaryButton";
 
 const BusMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -151,167 +154,96 @@ const BusMoreInfoPage: React.FC = () => {
         {/* First Row: Form Inputs */}
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            {/* Registration Number */}
-            <div className="flex flex-col">
-              <label htmlFor="registrationNumber" className="text-gray-600 font-semibold mb-1">
-                Registration Number
-              </label>
-              <input
-                id="registrationNumber"
-                type="text"
-                value={bus.registrationNumber}
-                readOnly
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            {/* Registration Number (Read-only) */}
+            <TextInput
+              id="registrationNumber"
+              label="Registration Number"
+              value={bus.registrationNumber}
+              onChange={handleTextInputChange}
+              readonly={true}
+            />
             {/* Make */}
-            <div className="flex flex-col">
-              <label htmlFor="make" className="text-gray-600 font-semibold mb-1">
-                Make
-              </label>
-              <input
-                id="make"
-                type="text"
-                value={bus.make}
-                onChange={handleTextInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput id="make" label="Make" value={bus.make} onChange={handleTextInputChange} />
             {/* Model */}
-            <div className="flex flex-col">
-              <label htmlFor="model" className="text-gray-600 font-semibold mb-1">
-                Model
-              </label>
-              <input
-                id="model"
-                type="text"
-                value={bus.model}
-                onChange={handleTextInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="model"
+              label="Model"
+              value={bus.model}
+              onChange={handleTextInputChange}
+            />
             {/* Year of Manufacture */}
-            <div className="flex flex-col">
-              <label htmlFor="yearOfManufacture" className="text-gray-600 font-semibold mb-1">
-                Year of Manufacture
-              </label>
-              <input
-                id="yearOfManufacture"
-                type="number"
-                value={bus.yearOfManufacture}
-                onChange={handleTextInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="yearOfManufacture"
+              label="Year of Manufacture"
+              type="number"
+              value={String(bus.yearOfManufacture)}
+              onChange={handleTextInputChange}
+            />
             {/* Fuel Type */}
-            <div className="flex flex-col">
-              <label htmlFor="fuelType" className="text-gray-600 font-semibold mb-1">
-                Fuel Type
-              </label>
-              <input
-                id="fuelType"
-                type="text"
-                value={bus.fuelType}
-                onChange={handleTextInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="fuelType"
+              label="Fuel Type"
+              value={bus.fuelType}
+              onChange={handleTextInputChange}
+            />
             {/* Bus Type */}
-            <div className="flex flex-col">
-              <label htmlFor="busType" className="text-gray-600 font-semibold mb-1">
-                Bus Type
-              </label>
-              <input
-                id="busType"
-                type="text"
-                value={bus.busType}
-                onChange={handleTextInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="busType"
+              label="Bus Type"
+              value={bus.busType}
+              onChange={handleTextInputChange}
+            />
             {/* Seating Capacity */}
-            <div className="flex flex-col">
-              <label htmlFor="seatingCapacity" className="text-gray-600 font-semibold mb-1">
-                Seating Capacity
-              </label>
-              <input
-                id="seatingCapacity"
-                type="number"
-                value={bus.seatingCapacity}
-                onChange={handleTextInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="seatingCapacity"
+              label="Seating Capacity"
+              type="number"
+              value={String(bus.seatingCapacity)}
+              onChange={handleTextInputChange}
+            />
             {/* Standing Capacity */}
-            <div className="flex flex-col">
-              <label htmlFor="standingCapacity" className="text-gray-600 font-semibold mb-1">
-                Standing Capacity
-              </label>
-              <input
-                id="standingCapacity"
-                type="number"
-                value={bus.standingCapacity}
-                onChange={handleTextInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="standingCapacity"
+              label="Standing Capacity"
+              type="number"
+              value={String(bus.standingCapacity)}
+              onChange={handleTextInputChange}
+            />
             {/* NTC Permit Number */}
-            <div className="flex flex-col">
-              <label htmlFor="ntcPermitNumber" className="text-gray-600 font-semibold mb-1">
-                NTC Permit Number
-              </label>
-              <input
-                id="ntcPermitNumber"
-                type="number"
-                value={bus.ntcPermitNumber}
-                onChange={handleTextInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="ntcPermitNumber"
+              label="NTC Permit Number"
+              type="number"
+              value={String(bus.ntcPermitNumber)}
+              onChange={handleTextInputChange}
+            />
             {/* Checkboxes for Active and A/C */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center space-x-2">
-                <input
-                  id="active"
-                  type="checkbox"
-                  checked={bus.active}
-                  onChange={handleTextInputChange}
-                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                />
-                <label htmlFor="active" className="text-gray-600 font-semibold">
-                  Active
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  id="a_C"
-                  type="checkbox"
-                  checked={bus.a_C}
-                  onChange={handleTextInputChange}
-                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                />
-                <label htmlFor="a_C" className="text-gray-600 font-semibold">
-                  A/C
-                </label>
-              </div>
+              <Checkbox
+                id="active"
+                label="Active"
+                checked={bus.active}
+                onChange={handleTextInputChange}
+              />
+              <Checkbox id="a_C" label="A/C" checked={bus.a_C} onChange={handleTextInputChange} />
             </div>
           </form>
         </div>
 
         {/* Second Row: Save and Delete Buttons */}
         <div className="mt-8 pt-4 border-t-2 border-gray-200 flex justify-end space-x-4 h-16 items-center">
-          <button
+          <PrimaryButton
             onClick={handleDelete}
             className="bg-red-600 text-white font-bold py-2 px-6 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
           >
             Delete
-          </button>
-          <button
+          </PrimaryButton>
+          <PrimaryButton
             onClick={handleSave}
             className="bg-green-600 text-white font-bold py-2 px-6 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
             Save
-          </button>
+          </PrimaryButton>
         </div>
       </div>
 

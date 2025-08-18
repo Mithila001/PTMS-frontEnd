@@ -5,7 +5,6 @@ import Sidebar from "../../components/shared/Sidebar";
 
 const OverviewPage = lazy(() => import("./OverviewPage"));
 const BusManagementPage = lazy(() => import("./busManagement/BusManagementPage"));
-const DriversPage = lazy(() => import("./DriversPage"));
 const RoutesPage = lazy(() => import("./routeManagment/RoutesPage"));
 const ReportsPage = lazy(() => import("./ReportsPage"));
 const SettingsPage = lazy(() => import("./SettingsPage"));
@@ -31,15 +30,15 @@ const DashboardPage: React.FC = () => {
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route index element={<OverviewPage />} />
-              <Route path="admin/overview" element={<OverviewPage />} />
-              <Route path="admin/buses" element={<BusManagementPage />} />
-              <Route path="admin/employees" element={<EmployeeManagementPage />} />
-              <Route path="admin/routes" element={<RoutesPage />} />
-              <Route path="admin/reports" element={<ReportsPage />} />
-              <Route path="admin/settings" element={<SettingsPage />} />
+              <Route path="/overview" element={<OverviewPage />} />
+              <Route path="/buses" element={<BusManagementPage />} />
+              <Route path="/employees" element={<EmployeeManagementPage />} />
+              <Route path="/routes" element={<RoutesPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
 
               {/* Redirect old root /admin to overview */}
-              <Route path="*" element={<Navigate to="overview" replace />} />
+              <Route path="*" element={<Navigate to="/overview" replace />} />
             </Routes>
           </Suspense>
         </main>

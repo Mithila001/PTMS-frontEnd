@@ -71,19 +71,15 @@ const RegisterNewBusPage: React.FC = () => {
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             {/* Registration Number */}
-            <div className="flex flex-col">
-              <label htmlFor="registrationNumber" className="text-gray-600 font-semibold mb-1">
-                Registration Number
-              </label>
-              <input
-                id="registrationNumber"
-                type="text"
-                value={bus.registrationNumber}
-                onChange={handleTextInputChange}
-                className="p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="registrationNumber"
+              label="Registration Number"
+              type="text"
+              value={bus.registrationNumber}
+              onChange={handleTextInputChange}
+            />
 
+            {/* Make */}
             <TextInput
               id="make"
               label="Make"

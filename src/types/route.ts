@@ -4,4 +4,5 @@ export interface Route {
   origin: string;
   destination: string;
   majorStops: string[];
+  routePath?: string;
 }

@@ -26,3 +26,5 @@ export interface Driver extends Employee {
   ntcLicenseNumber: string;
   ntcLicenseExpirationDate: string; // ISO 8601 string
 }
+
+export type EmployeeType = "driver" | "conductor";

@@ -10,7 +10,7 @@ type Props = {
 const menu = [
   { to: "overview", label: "Overview", icon: "📊" },
   { to: "buses", label: "Buses", icon: "🚌" },
-  { to: "employees", label: "Drivers", icon: "👩‍✈️" },
+  { to: "employees", label: "Employees", icon: "👩‍✈️" },
   { to: "routes", label: "Routes", icon: "🗺️" },
   { to: "reports", label: "Reports", icon: "📈" },
   { to: "settings", label: "Settings", icon: "⚙️" },
@@ -50,7 +50,7 @@ const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
           {menu.map((m) => (
             <NavLink
               key={m.to}
-              to={m.to === "overview" ? "/admin/overview" : `/admin/${m.to}`}
+              to={m.to === "overview" ? "/admin" : `/${m.to}`}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-6 py-3 text-left transition ${
                   isActive

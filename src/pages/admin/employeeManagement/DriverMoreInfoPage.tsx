@@ -7,6 +7,9 @@ import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
 import type { Driver } from "../../../types/employee";
 import { deleteDriver, getDriverById, updateDriver } from "../../../api/employeeService";
+import Checkbox from "../../../components/atoms/Checkbox";
+import TextInput from "../../../components/atoms/TextInput";
+import PrimaryButton from "../../../components/atoms/PrimaryButton";
 
 const DriverMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -155,221 +158,136 @@ const DriverMoreInfoPage: React.FC = () => {
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             {/* First Name */}
-            <div className="flex flex-col">
-              <label htmlFor="firstName" className="text-gray-600 font-semibold mb-1">
-                First Name
-              </label>
-              <input
-                id="firstName"
-                type="text"
-                value={driver.firstName}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="firstName"
+              label="First Name"
+              value={driver.firstName}
+              onChange={handleInputChange}
+            />
             {/* Last Name */}
-            <div className="flex flex-col">
-              <label htmlFor="lastName" className="text-gray-600 font-semibold mb-1">
-                Last Name
-              </label>
-              <input
-                id="lastName"
-                type="text"
-                value={driver.lastName}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="lastName"
+              label="Last Name"
+              value={driver.lastName}
+              onChange={handleInputChange}
+            />
             {/* NIC Number */}
-            <div className="flex flex-col">
-              <label htmlFor="nicNumber" className="text-gray-600 font-semibold mb-1">
-                NIC Number
-              </label>
-              <input
-                id="nicNumber"
-                type="text"
-                value={driver.nicNumber}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="nicNumber"
+              label="NIC Number"
+              value={driver.nicNumber}
+              onChange={handleInputChange}
+            />
             {/* Date of Birth */}
-            <div className="flex flex-col">
-              <label htmlFor="dateOfBirth" className="text-gray-600 font-semibold mb-1">
-                Date of Birth
-              </label>
-              <input
-                id="dateOfBirth"
-                type="date"
-                value={driver.dateOfBirth}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="dateOfBirth"
+              label="Date of Birth"
+              type="date"
+              value={driver.dateOfBirth}
+              onChange={handleInputChange}
+            />
             {/* Contact Number */}
-            <div className="flex flex-col">
-              <label htmlFor="contactNumber" className="text-gray-600 font-semibold mb-1">
-                Contact Number
-              </label>
-              <input
-                id="contactNumber"
-                type="tel"
-                value={driver.contactNumber}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="contactNumber"
+              label="Contact Number"
+              type="tel"
+              value={driver.contactNumber}
+              onChange={handleInputChange}
+            />
             {/* Email */}
-            <div className="flex flex-col">
-              <label htmlFor="email" className="text-gray-600 font-semibold mb-1">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={driver.email}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
-            {/* Address */}
-            <div className="flex flex-col md:col-span-2">
-              <label htmlFor="address" className="text-gray-600 font-semibold mb-1">
-                Address
-              </label>
-              <input
+            <TextInput
+              id="email"
+              label="Email"
+              type="email"
+              value={driver.email}
+              onChange={handleInputChange}
+            />
+            {/* Address - full width field */}
+            <div className="md:col-span-2">
+              <TextInput
                 id="address"
-                type="text"
+                label="Address"
                 value={driver.address}
                 onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
               />
             </div>
             {/* Date Joined */}
-            <div className="flex flex-col">
-              <label htmlFor="dateJoined" className="text-gray-600 font-semibold mb-1">
-                Date Joined
-              </label>
-              <input
-                id="dateJoined"
-                type="date"
-                value={driver.dateJoined}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="dateJoined"
+              label="Date Joined"
+              type="date"
+              value={driver.dateJoined}
+              onChange={handleInputChange}
+            />
             {/* Driving License Number */}
-            <div className="flex flex-col">
-              <label htmlFor="drivingLicenseNumber" className="text-gray-600 font-semibold mb-1">
-                Driving License Number
-              </label>
-              <input
-                id="drivingLicenseNumber"
-                type="text"
-                value={driver.drivingLicenseNumber}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="drivingLicenseNumber"
+              label="Driving License Number"
+              value={driver.drivingLicenseNumber}
+              onChange={handleInputChange}
+            />
             {/* License Expiration Date */}
-            <div className="flex flex-col">
-              <label htmlFor="licenseExpirationDate" className="text-gray-600 font-semibold mb-1">
-                License Expiration Date
-              </label>
-              <input
-                id="licenseExpirationDate"
-                type="date"
-                value={driver.licenseExpirationDate}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="licenseExpirationDate"
+              label="License Expiration Date"
+              type="date"
+              value={driver.licenseExpirationDate}
+              onChange={handleInputChange}
+            />
             {/* License Class */}
-            <div className="flex flex-col">
-              <label htmlFor="licenseClass" className="text-gray-600 font-semibold mb-1">
-                License Class
-              </label>
-              <input
-                id="licenseClass"
-                type="text"
-                value={driver.licenseClass}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="licenseClass"
+              label="License Class"
+              value={driver.licenseClass}
+              onChange={handleInputChange}
+            />
             {/* NTC License Number */}
-            <div className="flex flex-col">
-              <label htmlFor="ntcLicenseNumber" className="text-gray-600 font-semibold mb-1">
-                NTC License Number
-              </label>
-              <input
-                id="ntcLicenseNumber"
-                type="text"
-                value={driver.ntcLicenseNumber}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="ntcLicenseNumber"
+              label="NTC License Number"
+              value={driver.ntcLicenseNumber}
+              onChange={handleInputChange}
+            />
             {/* NTC License Expiration Date */}
-            <div className="flex flex-col">
-              <label
-                htmlFor="ntcLicenseExpirationDate"
-                className="text-gray-600 font-semibold mb-1"
-              >
-                NTC License Expiration Date
-              </label>
-              <input
-                id="ntcLicenseExpirationDate"
-                type="date"
-                value={driver.ntcLicenseExpirationDate}
-                onChange={handleInputChange}
-                className="bg-gray-50 p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none"
-              />
-            </div>
+            <TextInput
+              id="ntcLicenseExpirationDate"
+              label="NTC License Expiration Date"
+              type="date"
+              value={driver.ntcLicenseExpirationDate}
+              onChange={handleInputChange}
+            />
             {/* Is Current Employee & Available */}
             <div className="flex items-center gap-4 mt-2">
-              <div className="flex items-center">
-                <input
-                  id="isCurrentEmployee"
-                  type="checkbox"
-                  checked={driver.isCurrentEmployee}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 border-gray-300 rounded"
-                />
-                <label htmlFor="isCurrentEmployee" className="ml-2 text-gray-600 font-semibold">
-                  Is Current Employee
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="available"
-                  type="checkbox"
-                  checked={driver.available}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 border-gray-300 rounded"
-                />
-                <label htmlFor="available" className="ml-2 text-gray-600 font-semibold">
-                  Is Available
-                </label>
-              </div>
+              <Checkbox
+                id="isCurrentEmployee"
+                label="Is Current Employee"
+                checked={driver.isCurrentEmployee}
+                onChange={handleInputChange}
+              />
+              <Checkbox
+                id="available"
+                label="Is Available"
+                checked={driver.available}
+                onChange={handleInputChange}
+              />
             </div>
           </form>
         </div>
 
         {/* Buttons */}
         <div className="mt-8 pt-4 border-t-2 border-gray-200 flex justify-end space-x-4 h-16 items-center">
-          <button
+          <PrimaryButton
             onClick={handleDelete}
             className="bg-red-600 text-white font-bold py-2 px-6 rounded-md hover:bg-red-700 transition duration-300 ease-in-out"
           >
             Delete
-          </button>
-          <button
+          </PrimaryButton>
+          <PrimaryButton
             onClick={handleSave}
             className="bg-green-600 text-white font-bold py-2 px-6 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
           >
             Save
-          </button>
+          </PrimaryButton>
         </div>
       </div>
 

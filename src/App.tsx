@@ -13,6 +13,7 @@ import RegisterNewBusPage from "./pages/admin/busManagement/RegisterNewBusPage";
 import RouteMoreInfoPage from "./pages/admin/routeManagment/RouteMoreInfoPage";
 import AddRoutePage from "./pages/admin/routeManagment/AddRoutePage";
 import DriverMoreInfoPage from "./pages/admin/employeeManagement/DriverMoreInfoPage";
+import AddEmployeePage from "./pages/admin/employeeManagement/AddEmployeePage";
 
 function App() {
   return (
@@ -21,15 +22,14 @@ function App() {
 
       <main className="flex-grow  bg-amber-400">
         <Routes>
-          <Route path="/*" element={<DashboardPage />} />
-          <Route path="/showData" element={<ShowData />} />
-          <Route path="/pages/FormPage" element={<FormPage />} />
+          <Route path="*" element={<DashboardPage />} />
           <Route path="/showBuses" element={<DisplayBusDataPage />} />
           <Route path="/admin/buses/:id" element={<BusMoreInfoPage />} />
           <Route path="/admin/buses/addBus" element={<RegisterNewBusPage />} />
           <Route path="/admin/routes/:id" element={<RouteMoreInfoPage />} />
           <Route path="/admin/routes/addRoutes" element={<AddRoutePage />} />
-          <Route path="/admin/busManagement/driverInfo" element={<DriverMoreInfoPage />} />
+          <Route path="/admin/employeeManagement/driverInfo/:id" element={<DriverMoreInfoPage />} />
+          <Route path="/admin/employeeManagement/addEmployee" element={<AddEmployeePage />} />
           {/* Add other routes here */}
           <Route
             path="*"
