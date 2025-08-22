@@ -6,12 +6,15 @@ import { BrowserRouter } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import { ToastProvider } from "./contexts/ToastContext.tsx";
 import ToastContainer from "./components/atoms/ToastContainer.tsx";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <ToastProvider>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
         <ToastContainer />
       </ToastProvider>
     </BrowserRouter>

@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const getBuses = async (): Promise<Bus[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/buses`);
+    const response = await fetch(`${API_BASE_URL}/buses`, { credentials: "include" });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -18,7 +18,7 @@ export const getBuses = async (): Promise<Bus[]> => {
 
 export const getBusById = async (id: string): Promise<Bus | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/buses/${id}`);
+    const response = await fetch(`${API_BASE_URL}/buses/${id}`, { credentials: "include" });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
