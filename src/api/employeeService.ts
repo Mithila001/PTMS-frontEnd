@@ -8,7 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
  */
 export const getAllDrivers = async (): Promise<Driver[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/drivers`);
+    const response = await fetch(`${API_BASE_URL}/drivers`, { credentials: "include" });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -27,7 +27,7 @@ export const getAllDrivers = async (): Promise<Driver[]> => {
  */
 export const getDriverById = async (id: number): Promise<Driver | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/drivers/${id}`);
+    const response = await fetch(`${API_BASE_URL}/drivers/${id}`, { credentials: "include" });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -46,7 +46,9 @@ export const getDriverById = async (id: number): Promise<Driver | null> => {
  */
 export const getDriverByNic = async (nicNumber: string): Promise<Driver> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/drivers/nic/${nicNumber}`);
+    const response = await fetch(`${API_BASE_URL}/drivers/nic/${nicNumber}`, {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -71,6 +73,7 @@ export const createDriver = async (driverData: Omit<Driver, "id">): Promise<Driv
         "Content-Type": "application/json",
       },
       body: JSON.stringify(driverData),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -97,6 +100,7 @@ export const updateDriver = async (id: number, driverDetails: Partial<Driver>): 
         "Content-Type": "application/json",
       },
       body: JSON.stringify(driverDetails),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -118,6 +122,7 @@ export const deleteDriver = async (id: number): Promise<boolean> => {
   try {
     const response = await fetch(`${API_BASE_URL}/drivers/${id}`, {
       method: "DELETE",
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -137,7 +142,9 @@ export const deleteDriver = async (id: number): Promise<boolean> => {
  */
 export const getAllConductors = async (): Promise<Conductor[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/conductors`);
+    const response = await fetch(`${API_BASE_URL}/conductors`, {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -156,7 +163,9 @@ export const getAllConductors = async (): Promise<Conductor[]> => {
  */
 export const getConductorById = async (id: number): Promise<Conductor | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/conductors/${id}`);
+    const response = await fetch(`${API_BASE_URL}/conductors/${id}`, {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -175,7 +184,9 @@ export const getConductorById = async (id: number): Promise<Conductor | null> =>
  */
 export const getConductorByNic = async (nicNumber: string): Promise<Conductor> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/conductors/nic/${nicNumber}`);
+    const response = await fetch(`${API_BASE_URL}/conductors/nic/${nicNumber}`, {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -200,6 +211,7 @@ export const createConductor = async (conductorData: Omit<Conductor, "id">): Pro
         "Content-Type": "application/json",
       },
       body: JSON.stringify(conductorData),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -229,6 +241,7 @@ export const updateConductor = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify(conductorDetails),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -250,6 +263,7 @@ export const deleteConductor = async (id: number): Promise<boolean> => {
   try {
     const response = await fetch(`${API_BASE_URL}/conductors/${id}`, {
       method: "DELETE",
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

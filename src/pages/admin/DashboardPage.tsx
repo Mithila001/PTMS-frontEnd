@@ -30,12 +30,12 @@ const DashboardPage: React.FC = () => {
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route index element={<OverviewPage />} />
-              <Route path="/overview" element={<OverviewPage />} />
-              <Route path="/buses" element={<BusManagementPage />} />
-              <Route path="/employees" element={<EmployeeManagementPage />} />
-              <Route path="/routes" element={<RoutesPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="overview" element={<OverviewPage />} />
+              <Route path="buses" element={<BusManagementPage />} />
+              <Route path="employees" element={<EmployeeManagementPage />} />
+              <Route path="routes" element={<RoutesPage />} />
+              <Route path="reports" element={<ReportsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
 
               {/* Redirect old root /admin to overview */}
               <Route path="*" element={<Navigate to="/overview" replace />} />

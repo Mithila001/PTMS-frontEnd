@@ -1,4 +1,4 @@
-// src/components/shared/Sidebar.tsx
+// ptms-frontEnd\src\components\shared\Sidebar.tsx
 import React from "react";
 import { NavLink } from "react-router-dom";
 
@@ -50,7 +50,9 @@ const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
           {menu.map((m) => (
             <NavLink
               key={m.to}
-              to={m.to === "overview" ? "/admin" : `/${m.to}`}
+              to={m.to === "overview" ? "/admin" : `/admin/${m.to}`}
+              // Add the 'end' prop to the "Overview" NavLink
+              end={m.to === "overview"}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-6 py-3 text-left transition ${
                   isActive

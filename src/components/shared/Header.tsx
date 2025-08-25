@@ -9,9 +9,9 @@ function Header() {
 
   const links = [
     { to: "/", label: "Home" },
-    { to: "/showData", label: "Show Data" },
-    { to: "/pages/FormPage", label: "Form Page" },
-    { to: "/showBuses", label: "Bus Data" },
+    // { to: "/showData", label: "Show Data" },
+    // { to: "/pages/FormPage", label: "Form Page" },
+    // { to: "/showBuses", label: "Bus Data" },
   ];
 
   return (

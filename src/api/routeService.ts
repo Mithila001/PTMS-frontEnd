@@ -6,7 +6,7 @@ const ROUTES_API_URL = `${API_BASE_URL}/routes`;
 // Fetches all bus routes from the backend.
 export const getAllRoutes = async (): Promise<Route[]> => {
   try {
-    const response = await fetch(ROUTES_API_URL);
+    const response = await fetch(ROUTES_API_URL, { credentials: "include" });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -21,7 +21,7 @@ export const getAllRoutes = async (): Promise<Route[]> => {
 // Fetches a single bus route by its ID.
 export const getRouteById = async (id: number): Promise<Route> => {
   try {
-    const response = await fetch(`${ROUTES_API_URL}/${id}`);
+    const response = await fetch(`${ROUTES_API_URL}/${id}`, { credentials: "include" });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -37,7 +37,9 @@ export const getRouteById = async (id: number): Promise<Route> => {
 // Fetches a single bus route by its route number.
 export const getRouteByNumber = async (routeNumber: string): Promise<Route> => {
   try {
-    const response = await fetch(`${ROUTES_API_URL}/number/${routeNumber}`);
+    const response = await fetch(`${ROUTES_API_URL}/number/${routeNumber}`, {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -58,6 +60,7 @@ export const createRoute = async (routeData: Omit<Route, "id">): Promise<Route> 
         "Content-Type": "application/json",
       },
       body: JSON.stringify(routeData),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -79,6 +82,7 @@ export const updateRoute = async (id: number, routeDetails: Partial<Route>): Pro
         "Content-Type": "application/json",
       },
       body: JSON.stringify(routeDetails),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -96,6 +100,7 @@ export const deleteRoute = async (id: number): Promise<void> => {
   try {
     const response = await fetch(`${ROUTES_API_URL}/${id}`, {
       method: "DELETE",
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

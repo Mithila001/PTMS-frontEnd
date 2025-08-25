@@ -3,6 +3,7 @@
 import type { User, UserCredentials } from "../types/user";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// /api = VITE_API_BASE_URL
 
 /**
  * Handles the user login process by sending a POST request to the backend.
@@ -24,11 +25,8 @@ export const login = async (credentials: UserCredentials): Promise<User> => {
     });
 
     if (!response.ok) {
-      // Check for specific status codes like 401 (Unauthorized)
-      if (response.status === 401) {
-        throw new Error("Invalid username or password");
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(errorData.message || "An unexpected error occurred");
     }
 
     const data: User = await response.json();
