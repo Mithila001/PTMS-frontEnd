@@ -1,6 +1,7 @@
 import type { Bus } from "../types/bus";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// API_BASE_URL = /api
 
 export const getBuses = async (): Promise<Bus[]> => {
   try {

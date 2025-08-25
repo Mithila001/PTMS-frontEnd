@@ -12,6 +12,7 @@ const menu = [
   { to: "buses", label: "Buses", icon: "🚌" },
   { to: "employees", label: "Employees", icon: "👩‍✈️" },
   { to: "routes", label: "Routes", icon: "🗺️" },
+  { to: "logs", label: "Logs", icon: "📝" },
   { to: "reports", label: "Reports", icon: "📈" },
   { to: "settings", label: "Settings", icon: "⚙️" },
 ];

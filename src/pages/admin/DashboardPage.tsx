@@ -2,6 +2,8 @@
 import React, { Suspense, lazy, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "../../components/shared/Sidebar";
+import LoginPage from "../LoginPage";
+import LogsPage from "./LogsPage";
 
 const OverviewPage = lazy(() => import("./OverviewPage"));
 const BusManagementPage = lazy(() => import("./busManagement/BusManagementPage"));
@@ -36,6 +38,7 @@ const DashboardPage: React.FC = () => {
               <Route path="routes" element={<RoutesPage />} />
               <Route path="reports" element={<ReportsPage />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="logs" element={<LogsPage />} />
 
               {/* Redirect old root /admin to overview */}
               <Route path="*" element={<Navigate to="/overview" replace />} />

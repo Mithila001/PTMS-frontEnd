@@ -11,9 +11,15 @@ export type Column<T> = {
 type DataTableProps<T extends object> = {
   data: T[];
   columns: Column<T>[];
+  // New optional prop for columns that require line breaks.
+  columnsWithLineBreaks?: (keyof T | "actions")[];
 };
 
-const DataTable = <T extends object>({ data, columns }: DataTableProps<T>) => {
+const DataTable = <T extends object>({
+  data,
+  columns,
+  columnsWithLineBreaks = [],
+}: DataTableProps<T>) => {
   // Common Tailwind classes for the table
   const thStyles =
     "px-5 py-5 border-b-2 border-gray-500 text-left text-xs font-bold text-gray-700 uppercase tracking-wider";
@@ -39,13 +45,27 @@ const DataTable = <T extends object>({ data, columns }: DataTableProps<T>) => {
                 rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"
               } hover:bg-gray-100 transition duration-200 ease-in-out`}
             >
-              {columns.map((column, colIndex) => (
-                <td key={colIndex} className={tdStyles}>
-                  {column.render
-                    ? column.render(row)
-                    : (row[column.key as keyof T] as React.ReactNode)}
-                </td>
-              ))}
+              {columns.map((column, colIndex) => {
+                const value = row[column.key as keyof T] as React.ReactNode;
+                const shouldBreakLines = columnsWithLineBreaks.includes(column.key);
+
+                if (shouldBreakLines && typeof value === "string") {
+                  const lines = value.split("\n");
+                  return (
+                    <td key={colIndex} className={`${tdStyles} whitespace-pre-wrap`}>
+                      {lines.map((line, lineIndex) => (
+                        <p key={lineIndex}>{line}</p>
+                      ))}
+                    </td>
+                  );
+                }
+
+                return (
+                  <td key={colIndex} className={tdStyles}>
+                    {column.render ? column.render(row) : (value as React.ReactNode)}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
