@@ -15,6 +15,7 @@ const menu = [
   { to: "logs", label: "Logs", icon: "📝" },
   { to: "reports", label: "Reports", icon: "📈" },
   { to: "settings", label: "Settings", icon: "⚙️" },
+  { to: "assignments", label: "Assignments", icon: "🗂️" },
 ];
 
 const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
