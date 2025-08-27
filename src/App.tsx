@@ -19,6 +19,9 @@ import Header from "./components/shared/Header";
 import Footer from "./components/shared/Footer";
 import { useAuth } from "./contexts/AuthContext";
 import LoadingSpinner from "./components/atoms/LoadingSpinner";
+import AssignmentMoreInfoPage from "./pages/admin/assignmentManagement/AssignmentMoreInfoPage";
+import ScheduledTripsMoreInfoPage from "./pages/admin/assignmentManagement/ScheduledTripsMoreInfoPage";
+import AddScheduledTripPage from "./pages/admin/assignmentManagement/AddScheduledTripPage";
 
 function App() {
   const { loading, isLoggedIn } = useAuth(); // Also get isLoggedIn state
@@ -51,6 +54,15 @@ function App() {
                 element={<DriverMoreInfoPage />}
               />
               <Route path="/admin/employeeManagement/addEmployee" element={<AddEmployeePage />} />
+              <Route path="/admin/assignments/moreInfo/:id" element={<AssignmentMoreInfoPage />} />
+              <Route
+                path="/admin/scheduledTrips/moreInfo/:id"
+                element={<ScheduledTripsMoreInfoPage />}
+              />
+              <Route
+                path="/admin/scheduledTrips/addScheduledTrip"
+                element={<AddScheduledTripPage />}
+              />
             </Route>
             {/* If the user is logged in, redirect root to admin */}
             {isLoggedIn && <Route path="/" element={<Navigate to="/admin" replace />} />}

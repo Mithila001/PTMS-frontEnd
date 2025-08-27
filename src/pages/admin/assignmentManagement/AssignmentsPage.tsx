@@ -7,33 +7,27 @@ import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import DataTable from "../../../components/molecules/DataTable";
 import type { Column } from "../../../components/molecules/DataTable";
-import type { Assignment, ScheduledTrip } from "../../../types/assignment";
+import type { Assignment } from "../../../types/assignment";
 import { getAllAssignments } from "../../../api/assignmentService";
-import { getAllScheduledTrips } from "../../../api/scheduledTripService";
+import { Link, useNavigate } from "react-router-dom";
 
 const AssignmentsPage: React.FC = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [scheduledTrips, setScheduledTrips] = useState<ScheduledTrip[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [filteredAssignments, setFilteredAssignments] = useState<Assignment[]>([]);
-  const [filters, setFilters] = useState({ searchTerm: "" });
+  const [filters, setFilters] = useState({ searchTerm: "" }); // Fetches data when the component mounts
 
-  // Fetches data when the component mounts
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch both assignments and scheduled trips in parallel
-        const [assignmentsData, scheduledTripsData] = await Promise.all([
-          getAllAssignments(),
-          getAllScheduledTrips(),
-        ]);
+        const assignmentsData = await getAllAssignments();
         console.log("Fetched assignments:", assignmentsData);
-        console.log("Fetched scheduled trips:", scheduledTripsData);
         setAssignments(assignmentsData);
-        setScheduledTrips(scheduledTripsData);
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message);
@@ -45,9 +39,8 @@ const AssignmentsPage: React.FC = () => {
       }
     };
     fetchData();
-  }, []);
+  }, []); // Filter assignments based on search term
 
-  // Filter assignments based on search term
   useEffect(() => {
     const newFilteredAssignments = assignments.filter((assignment) =>
       assignment.scheduledTrip.route.routeNumber
@@ -55,9 +48,8 @@ const AssignmentsPage: React.FC = () => {
         .includes(filters.searchTerm.toLowerCase())
     );
     setFilteredAssignments(newFilteredAssignments);
-  }, [assignments, filters]);
+  }, [assignments, filters]); // UI styles from the example
 
-  // UI styles from the example
   const commonHeaderStyles =
     "flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-2 bg-white border rounded-lg shadow-sm mb-6";
   const titleStyles = "text-3xl font-bold text-gray-800";
@@ -71,9 +63,8 @@ const AssignmentsPage: React.FC = () => {
 
   if (error) {
     return <ErrorAlert errorMessage={error} />;
-  }
+  } // Define the columns for the DataTable
 
-  // Define the columns for the DataTable
   const columns: Column<Assignment>[] = [
     { header: "ID", key: "id" },
     {
@@ -82,19 +73,19 @@ const AssignmentsPage: React.FC = () => {
       render: (assignment) => assignment.scheduledTrip?.route.routeNumber || "N/A",
     },
     {
-      header: "Bus ID",
-      key: "busId",
-      render: (assignment) => assignment.busId || "N/A",
+      header: "Bus",
+      key: "busRegistrationNumber",
+      render: (assignment) => assignment.busRegistrationNumber || "N/A",
     },
     {
-      header: "Driver ID",
-      key: "driverId",
-      render: (assignment) => assignment.driverId || "N/A",
+      header: "Driver",
+      key: "driverName",
+      render: (assignment) => assignment.driverName || "N/A",
     },
     {
-      header: "Conductor ID",
-      key: "conductorId",
-      render: (assignment) => assignment.conductorId || "N/A",
+      header: "Conductor",
+      key: "conductorName",
+      render: (assignment) => assignment.conductorName || "N/A",
     },
     { header: "Date", key: "date" },
     { header: "Status", key: "status" },
@@ -103,7 +94,7 @@ const AssignmentsPage: React.FC = () => {
       key: "actions",
       render: (assignment) => (
         <button
-          onClick={() => console.log(`View assignment with ID: ${assignment.id}`)}
+          onClick={() => navigate(`/admin/assignments/moreInfo/${assignment.id}`)}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-6 rounded-full text-xs"
         >
           View
@@ -131,7 +122,6 @@ const AssignmentsPage: React.FC = () => {
           </PrimaryButton>
         </div>
       </div>
-
       {/* Content Table */}
       <div className={contentContainerStyles}>
         <DataTable data={filteredAssignments} columns={columns} />

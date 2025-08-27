@@ -10,6 +10,7 @@ export const getBuses = async (): Promise<Bus[]> => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data: Bus[] = await response.json();
+    console.log("Fetched buses:", data);
     return data;
   } catch (error) {
     console.error("Failed to fetch buses:", error);

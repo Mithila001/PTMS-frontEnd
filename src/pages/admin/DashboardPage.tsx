@@ -12,6 +12,7 @@ const ReportsPage = lazy(() => import("./ReportsPage"));
 const SettingsPage = lazy(() => import("./SettingsPage"));
 const EmployeeManagementPage = lazy(() => import("./employeeManagement/EmployeeManagementPage"));
 const AssignmentManagementPage = lazy(() => import("./assignmentManagement/AssignmentsPage"));
+const ScheduledTripsPage = lazy(() => import("./assignmentManagement/ScheduledTripsPage"));
 
 const LoadingFallback: React.FC = () => (
   <div className="p-8">
@@ -41,6 +42,7 @@ const DashboardPage: React.FC = () => {
               <Route path="settings" element={<SettingsPage />} />
               <Route path="logs" element={<LogsPage />} />
               <Route path="assignments" element={<AssignmentManagementPage />} />
+              <Route path="scheduled-trips" element={<ScheduledTripsPage />} />
 
               {/* Redirect old root /admin to overview */}
               <Route path="*" element={<Navigate to="/overview" replace />} />

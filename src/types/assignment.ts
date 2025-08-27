@@ -1,21 +1,16 @@
 // src/types/assignment.ts
 
-// src/types/assignment.ts
-import type { Bus } from "./bus";
-import type { Driver, Conductor } from "./employee";
 import type { Route } from "./route";
 
 export type AssignmentStatus = "SCHEDULED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
+export type TripDirection = "TO" | "FROM";
 
 export interface ScheduledTrip {
   id: number;
   route: Route;
-  bus: Bus;
-  driver: Driver;
-  conductor: Conductor;
-  scheduledStartTime: string; // ISO 8601 string
-  scheduledEndTime: string; // ISO 8601 string
-  active: boolean;
+  direction: TripDirection;
+  expectedStartTime: string; // "HH:mm:ss" string
+  expectedEndTime: string; // "HH:mm:ss" string
 }
 
 export interface Assignment {
@@ -24,8 +19,11 @@ export interface Assignment {
   busId: number;
   driverId: number;
   conductorId: number;
-  date: string; // ISO 8601 string
-  actualStartTime?: string; // Optional field
-  actualEndTime?: string; // Optional field
+  date: string;
+  actualStartTime?: string | null;
+  actualEndTime?: string | null;
   status: AssignmentStatus;
+  driverName?: string;
+  conductorName?: string;
+  busRegistrationNumber?: string;
 }
