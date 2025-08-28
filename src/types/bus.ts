@@ -8,7 +8,8 @@ export interface Bus {
   seatingCapacity: number;
   standingCapacity: number;
   ntcPermitNumber: number;
-  busType: string;
+  comfortType: string;
+  serviceType: string;
   active: boolean;
-  a_C: boolean;
+  isA_C: boolean;
 }

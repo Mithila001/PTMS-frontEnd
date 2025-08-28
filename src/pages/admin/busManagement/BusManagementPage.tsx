@@ -5,6 +5,7 @@ import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import type { Column } from "../../../components/molecules/DataTable";
 import DataTable from "../../../components/molecules/DataTable";
+import { useApplicationData } from "../../../contexts/ApplicationDataContext";
 
 const BusManagementPage: React.FC = () => {
   const [buses, setBuses] = useState<Bus[]>([]);
@@ -12,6 +13,8 @@ const BusManagementPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
   const [filteredBuses, setFilteredBuses] = useState<Bus[]>([]);
+
+  const { enums } = useApplicationData();
 
   useEffect(() => {
     const fetchBuses = async () => {
@@ -37,7 +40,7 @@ const BusManagementPage: React.FC = () => {
         .toLowerCase()
         .includes(filters.searchTerm.toLowerCase());
 
-      const matchesFilter = !filters.selectedFilter || bus.fuelType === filters.selectedFilter;
+      const matchesFilter = !filters.selectedFilter || bus.serviceType === filters.selectedFilter;
 
       return matchesSearchTerm && matchesFilter;
     });
@@ -73,9 +76,10 @@ const BusManagementPage: React.FC = () => {
     { header: "Fuel Type", key: "fuelType" },
     { header: "Seating Capacity", key: "seatingCapacity" },
     { header: "NTC Permit Number", key: "ntcPermitNumber" },
-    { header: "Bus Type", key: "busType" },
+    { header: "Bus Type", key: "serviceType" },
+    { header: "Comfort Type", key: "comfortType" },
     { header: "Active", key: "active", render: (bus) => (bus.active ? "Yes" : "No") },
-    { header: "A/C", key: "a_C", render: (bus) => (bus.a_C ? "Yes" : "No") },
+    { header: "A/C", key: "isA_C", render: (bus) => (bus.isA_C ? "Yes" : "No") },
     {
       header: "",
       key: "actions",
@@ -100,7 +104,7 @@ const BusManagementPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <SearchAndFilter
             onFilterChange={setFilters}
-            filterOptions={fuelTypes}
+            filterOptions={enums.serviceType}
             filterLabel="Filter By"
           />
           <PrimaryButton onClick={handleAddBus}>Add Bus</PrimaryButton>

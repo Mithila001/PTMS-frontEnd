@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Define the shape of a column.
 export type Column<T> = {
@@ -20,10 +20,52 @@ const DataTable = <T extends object>({
   columns,
   columnsWithLineBreaks = [],
 }: DataTableProps<T>) => {
+  // State for sorting
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof T | null;
+    direction: "asc" | "desc";
+  }>({ key: null, direction: "asc" });
+
   // Common Tailwind classes for the table
   const thStyles =
     "px-5 py-5 border-b-2 border-gray-500 text-left text-xs font-bold text-gray-700 uppercase tracking-wider";
   const tdStyles = "px-5 py-2 border-b border-gray-200 text-sm";
+
+  // This function will sort the data based on our sort state.
+  const sortedData = React.useMemo(() => {
+    let sortableData = [...data]; // Create a copy of the data to avoid mutating the original prop
+    if (sortConfig.key !== null) {
+      sortableData.sort((a, b) => {
+        const aValue = a[sortConfig.key as keyof T];
+        const bValue = b[sortConfig.key as keyof T];
+        if (aValue < bValue) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableData;
+  }, [data, sortConfig]);
+
+  // Function to handle header clicks and update sort state.
+  const handleSort = (key: keyof T | "actions") => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key: key as keyof T, direction });
+  };
+
+  // Function to determine the sorting icon.
+  const getSortIcon = (key: keyof T | "actions") => {
+    if (sortConfig.key !== key) {
+      return null;
+    }
+    return sortConfig.direction === "asc" ? "▲" : "▼";
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -31,14 +73,21 @@ const DataTable = <T extends object>({
         <thead className="bg-gray-100">
           <tr>
             {columns.map((column, index) => (
-              <th key={index} className={thStyles}>
-                {column.header}
+              <th
+                key={index}
+                className={`${thStyles} cursor-pointer`}
+                onClick={() => handleSort(column.key)}
+              >
+                <div className="flex items-center">
+                  <span>{column.header}</span>
+                  <span className="ml-2">{getSortIcon(column.key)}</span>
+                </div>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => (
+          {sortedData.map((row, rowIndex) => (
             <tr
               key={rowIndex}
               className={`${
