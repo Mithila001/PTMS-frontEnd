@@ -1,11 +1,17 @@
 // src/contexts/ApplicationDataContext.tsx
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { fetchBusTypes } from "../api/enumService";
+import {
+  fetchBusEnumServiceTypes,
+  fetchBusEnumComfortTypes,
+  fetchBusEnumFuelTypes,
+} from "../api/enumService";
 import { useToast } from "./ToastContext";
 
 interface ApplicationDataContextType {
   enums: {
     serviceType: string[];
+    comfortType: string[];
+    fuelType: string[];
   };
   loading: boolean;
   error: string | null;
@@ -14,7 +20,11 @@ interface ApplicationDataContextType {
 const ApplicationDataContext = createContext<ApplicationDataContextType | undefined>(undefined);
 
 export const ApplicationDataProvider = ({ children }: { children: ReactNode }) => {
-  const [enums, setEnums] = useState<ApplicationDataContextType["enums"]>({ serviceType: [] });
+  const [enums, setEnums] = useState<ApplicationDataContextType["enums"]>({
+    serviceType: [],
+    comfortType: [],
+    fuelType: [],
+  });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,10 +33,19 @@ export const ApplicationDataProvider = ({ children }: { children: ReactNode }) =
   useEffect(() => {
     const fetchEnums = async () => {
       try {
-        const serviceTypesData = await fetchBusTypes();
-        setEnums((prevEnums) => ({ ...prevEnums, serviceType: serviceTypesData }));
+        const [serviceTypesData, comfortTypesData, fuelTypesData] = await Promise.all([
+          fetchBusEnumServiceTypes(),
+          fetchBusEnumComfortTypes(),
+          fetchBusEnumFuelTypes(),
+        ]);
+
+        setEnums({
+          serviceType: serviceTypesData,
+          comfortType: comfortTypesData,
+          fuelType: fuelTypesData,
+        });
       } catch (err) {
-        setError("Failed to fetch service types.");
+        setError("Failed to fetch application data.");
         showToast("Failed to load application data. Please refresh.", "error");
       } finally {
         setLoading(false);

@@ -1,53 +1,72 @@
-// src/pages/admin/RegisterNewBusPage.tsx
-
 import React, { useState } from "react";
-import { addBus } from "../../../api/busService"; // Make sure to create this new API function
+import { addBus } from "../../../api/busService";
 import type { Bus } from "../../../types/bus";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import Checkbox from "../../../components/atoms/Checkbox";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
+import Dropdown from "../../../components/atoms/Dropdown"; // NEW IMPORT
+import { useApplicationData } from "../../../contexts/ApplicationDataContext"; // NEW IMPORT
+import { formatErrorMessage } from "../../../utils/errorFormatter";
+import { useToast } from "../../../contexts/ToastContext";
+import { busValidationSchema } from "../../../schemas/busValidation";
+import { useValidation } from "../../../hooks/useValidation";
 
 const emptyBus: Omit<Bus, "id"> = {
   registrationNumber: "",
   make: "",
   model: "",
-  yearOfManufacture: 1, // Default to current year or a sensible default
+  yearOfManufacture: new Date().getFullYear(), // Default to the current year
   fuelType: "",
-  busType: "",
+  serviceType: "", // NEW FIELD
+  comfortType: "", // NEW FIELD
   seatingCapacity: 0,
   standingCapacity: 0,
-  ntcPermitNumber: -1,
+  ntcPermitNumber: 0,
   active: true,
-  a_C: false,
+  isA_C: false, // Updated property name
 };
 
 const RegisterNewBusPage: React.FC = () => {
   const [bus, setBus] = useState<Omit<Bus, "id">>(emptyBus);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+
+  // Use the context to get application data
+  const { enums } = useApplicationData();
+  const { showToast } = useToast();
+  const { errors, isFormValid } = useValidation(bus, busValidationSchema);
 
   const handleSave = async () => {
+    setSubmitted(true);
+    if (!isFormValid) {
+      showToast("Please correct the form errors.", "error");
+      return;
+    }
     setLoading(true);
-    setError(null);
+
     try {
-      // API call to add the new bus
       await addBus(bus);
       console.log("Bus created successfully.");
       alert("Bus created successfully! 👍");
       setBus(emptyBus); // Reset form after successful submission
+      setSubmitted(false);
     } catch (error) {
       console.error("Failed to save bus details:", error);
-      setError("Failed to create bus. Please try again. 😢");
+      const errorMessage = formatErrorMessage(error);
+      showToast(errorMessage, "error");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value, type, checked } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+
     setBus((prevBus) => {
+      if (!prevBus) return emptyBus;
       return {
         ...prevBus,
         [id]: type === "checkbox" ? checked : value,
@@ -55,7 +74,10 @@ const RegisterNewBusPage: React.FC = () => {
     });
   };
 
-  if (loading) {
+  // Combine loading states from both API call and context
+  const isLoading = loading;
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <LoadingSpinner />
@@ -76,16 +98,19 @@ const RegisterNewBusPage: React.FC = () => {
               label="Registration Number"
               type="text"
               value={bus.registrationNumber}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
+              errorMessage={errors.registrationNumber}
+              submitted={submitted}
             />
-
             {/* Make */}
             <TextInput
               id="make"
               label="Make"
               type="text"
               value={bus.make}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
+              errorMessage={errors.make}
+              submitted={submitted}
             />
             {/* Model */}
             <TextInput
@@ -93,7 +118,9 @@ const RegisterNewBusPage: React.FC = () => {
               label="Model"
               type="text"
               value={bus.model}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
+              errorMessage={errors.model}
+              submitted={submitted}
             />
             {/* Year of Manufacture */}
             <TextInput
@@ -101,23 +128,39 @@ const RegisterNewBusPage: React.FC = () => {
               label="Year of Manufacture"
               type="number"
               value={String(bus.yearOfManufacture)}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
+              errorMessage={errors.yearOfManufacture}
+              submitted={submitted}
             />
             {/* Fuel Type */}
-            <TextInput
+            <Dropdown
               id="fuelType"
               label="Fuel Type"
-              type="text"
+              options={enums.fuelType}
               value={bus.fuelType}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
+              errorMessage={errors.fuelType}
+              submitted={submitted}
             />
-            {/* Bus Type */}
-            <TextInput
-              id="busType"
-              label="Bus Type"
-              type="text"
-              value={bus.busType}
-              onChange={handleTextInputChange}
+            {/* Service Type */}
+            <Dropdown
+              id="serviceType"
+              label="Service Type"
+              options={enums.serviceType}
+              value={bus.serviceType}
+              onChange={handleInputChange}
+              errorMessage={errors.serviceType}
+              submitted={submitted}
+            />
+            {/* Bus Comfort Type */}
+            <Dropdown
+              id="comfortType"
+              label="Bus Comfort Type"
+              options={enums.comfortType}
+              value={bus.comfortType}
+              onChange={handleInputChange}
+              errorMessage={errors.comfortType}
+              submitted={submitted}
             />
             {/* Seating Capacity */}
             <TextInput
@@ -125,7 +168,9 @@ const RegisterNewBusPage: React.FC = () => {
               label="Seating Capacity"
               type="number"
               value={String(bus.seatingCapacity)}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
+              errorMessage={errors.seatingCapacity}
+              submitted={submitted}
             />
             {/* Standing Capacity */}
             <TextInput
@@ -133,7 +178,9 @@ const RegisterNewBusPage: React.FC = () => {
               label="Standing Capacity"
               type="number"
               value={String(bus.standingCapacity)}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
+              errorMessage={errors.standingCapacity}
+              submitted={submitted}
             />
             {/* NTC Permit Number */}
             <TextInput
@@ -141,22 +188,23 @@ const RegisterNewBusPage: React.FC = () => {
               label="NTC Permit Number"
               type="number"
               value={String(bus.ntcPermitNumber)}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
+              errorMessage={errors.ntcPermitNumber}
+              submitted={submitted}
             />
-
             {/* Checkboxes for Active and A/C */}
             <div className="grid grid-cols-2 gap-4">
               <Checkbox
                 id="active"
                 label="Active"
                 checked={bus.active}
-                onChange={handleTextInputChange}
+                onChange={handleInputChange}
               />
-              <Checkbox id="a_C" label="A/C" checked={bus.a_C} onChange={handleTextInputChange} />
+              <Checkbox id="isA_C" label="A/C" checked={bus.isA_C} onChange={handleInputChange} />
             </div>
           </form>
         </div>
-        {error && <ErrorAlert errorMessage={error} />}
+
         <div className="mt-8 pt-4 border-t-2 border-gray-200 flex justify-end space-x-4 h-16 items-center">
           <PrimaryButton
             onClick={handleSave}

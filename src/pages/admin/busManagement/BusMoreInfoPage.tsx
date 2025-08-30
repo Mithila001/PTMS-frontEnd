@@ -7,19 +7,22 @@ import type { Bus } from "../../../types/bus";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import isEqual from "lodash.isequal";
-import { compareTwoObjects } from "../../../utils/compareTwoObjects"; // Assuming this is the correct path
+import { compareTwoObjects } from "../../../utils/compareTwoObjects";
 import TextInput from "../../../components/atoms/TextInput";
 import Checkbox from "../../../components/atoms/Checkbox";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
+import Dropdown from "../../../components/atoms/Dropdown"; // <--- NEW IMPORT
+import { useApplicationData } from "../../../contexts/ApplicationDataContext"; // <--- NEW IMPORT
 
 const BusMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [bus, setBus] = useState<Bus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasChanges, setHasChanges] = useState(true);
-  const busBackup = useRef<Bus | null>(null); // Backup for comparison
-  //const [isReadOnly, setIsReadOnly] = useState(true); //Future implementation for access control based on user roles
+  const busBackup = useRef<Bus | null>(null);
+
+  // Use the context to get application data
+  const { enums, loading: enumsLoading, error: enumsError } = useApplicationData();
 
   useEffect(() => {
     if (id) {
@@ -50,22 +53,20 @@ const BusMoreInfoPage: React.FC = () => {
   const handleSave = async () => {
     setLoading(true);
 
-    const comparison = compareTwoObjects(bus as Bus, busBackup.current as Bus);
-
     if (bus === null) {
       setLoading(false);
       alert("Error!!!! No bus data to save. Please ensure the bus details are loaded correctly.");
-      return; // Exit the function early
+      return;
     }
 
-    // Check if there are no changes
+    const comparison = compareTwoObjects(bus as Bus, busBackup.current as Bus);
+
     if (comparison.isMatching) {
       setLoading(false);
       alert("No changes detected. Bus details were not updated. 🤷");
-      return; // Exit the function early
+      return;
     }
 
-    // If there are changes, log them to the console in a human-readable format
     if (comparison.changedLogs.length > 0) {
       console.log("Bus details have been changed. The following updates will be saved:");
       comparison.changedLogs.forEach((log) => {
@@ -74,10 +75,8 @@ const BusMoreInfoPage: React.FC = () => {
     }
 
     try {
-      // If the comparison found changes, proceed with the API call.
       await updateBus(bus.id.toString(), bus);
       console.log("Bus details updated successfully.");
-      //alert("Bus details updated successfully! 👍");
       busBackup.current = bus;
     } catch (error) {
       console.error("Failed to save bus details:", error);
@@ -106,7 +105,10 @@ const BusMoreInfoPage: React.FC = () => {
     }
   };
 
-  if (loading) {
+  // Combine loading states from both API call and context
+  const isLoading = loading || enumsLoading;
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <LoadingSpinner />
@@ -114,10 +116,12 @@ const BusMoreInfoPage: React.FC = () => {
     );
   }
 
-  if (error) {
+  // Combine error states
+  const pageError = error || enumsError;
+  if (pageError) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={error} />
+        <ErrorAlert errorMessage={pageError} />
       </div>
     );
   }
@@ -130,12 +134,13 @@ const BusMoreInfoPage: React.FC = () => {
     );
   }
 
-  const handleTextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value, type, checked } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+
     setBus((prevBus) => {
       if (!prevBus) return null;
 
-      setHasChanges(true);
       return {
         ...prevBus,
         [id]: type === "checkbox" ? checked : value,
@@ -159,39 +164,44 @@ const BusMoreInfoPage: React.FC = () => {
               id="registrationNumber"
               label="Registration Number"
               value={bus.registrationNumber}
-              onChange={handleTextInputChange}
-              readonly={true}
+              onChange={handleInputChange}
+              readonly={false}
             />
             {/* Make */}
-            <TextInput id="make" label="Make" value={bus.make} onChange={handleTextInputChange} />
+            <TextInput id="make" label="Make" value={bus.make} onChange={handleInputChange} />
             {/* Model */}
-            <TextInput
-              id="model"
-              label="Model"
-              value={bus.model}
-              onChange={handleTextInputChange}
-            />
+            <TextInput id="model" label="Model" value={bus.model} onChange={handleInputChange} />
             {/* Year of Manufacture */}
             <TextInput
               id="yearOfManufacture"
               label="Year of Manufacture"
               type="number"
               value={String(bus.yearOfManufacture)}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
             />
             {/* Fuel Type */}
-            <TextInput
+            <Dropdown
               id="fuelType"
               label="Fuel Type"
+              options={enums.fuelType}
               value={bus.fuelType}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
             />
-            {/* Bus Type */}
-            <TextInput
-              id="busType"
-              label="Bus Type"
-              value={bus.busType}
-              onChange={handleTextInputChange}
+            {/* Service Type */} {/* <--- NEW DROPDOWN */}
+            <Dropdown
+              id="serviceType"
+              label="Service Type"
+              options={enums.serviceType}
+              value={bus.serviceType}
+              onChange={handleInputChange}
+            />
+            {/* Bus Comfort Type */}
+            <Dropdown
+              id="comfortType"
+              label="Bus Comfort Type"
+              options={enums.comfortType}
+              value={bus.comfortType}
+              onChange={handleInputChange}
             />
             {/* Seating Capacity */}
             <TextInput
@@ -199,7 +209,7 @@ const BusMoreInfoPage: React.FC = () => {
               label="Seating Capacity"
               type="number"
               value={String(bus.seatingCapacity)}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
             />
             {/* Standing Capacity */}
             <TextInput
@@ -207,7 +217,7 @@ const BusMoreInfoPage: React.FC = () => {
               label="Standing Capacity"
               type="number"
               value={String(bus.standingCapacity)}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
             />
             {/* NTC Permit Number */}
             <TextInput
@@ -215,7 +225,7 @@ const BusMoreInfoPage: React.FC = () => {
               label="NTC Permit Number"
               type="number"
               value={String(bus.ntcPermitNumber)}
-              onChange={handleTextInputChange}
+              onChange={handleInputChange}
             />
             {/* Checkboxes for Active and A/C */}
             <div className="grid grid-cols-2 gap-4">
@@ -223,9 +233,9 @@ const BusMoreInfoPage: React.FC = () => {
                 id="active"
                 label="Active"
                 checked={bus.active}
-                onChange={handleTextInputChange}
+                onChange={handleInputChange}
               />
-              <Checkbox id="a_C" label="A/C" checked={bus.a_C} onChange={handleTextInputChange} />
+              <Checkbox id="isA_C" label="A/C" checked={bus.isA_C} onChange={handleInputChange} />
             </div>
           </form>
         </div>

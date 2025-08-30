@@ -81,11 +81,13 @@ export const addBus = async (busData: Omit<Bus, "id">): Promise<Bus> => {
       body: JSON.stringify(busData),
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => null); // Catch case where body isn't JSON
+      const errorMessage = errorData?.detail || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
-    const updatedBus: Bus = await response.json();
-    return updatedBus;
+    const newBus: Bus = await response.json();
+    return newBus;
   } catch (error) {
     console.error("Error adding new bus:", error);
     // It's good practice to re-throw the error so the calling component can handle it
