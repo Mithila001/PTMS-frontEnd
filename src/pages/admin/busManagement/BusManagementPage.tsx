@@ -6,6 +6,7 @@ import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import type { Column } from "../../../components/molecules/DataTable";
 import DataTable from "../../../components/molecules/DataTable";
 import { useApplicationData } from "../../../contexts/ApplicationDataContext";
+import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 
 const BusManagementPage: React.FC = () => {
   const [buses, setBuses] = useState<Bus[]>([]);
@@ -49,7 +50,7 @@ const BusManagementPage: React.FC = () => {
   }, [buses, filters]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -59,9 +60,6 @@ const BusManagementPage: React.FC = () => {
   const handleViewBus = (busId: number) => {
     window.location.href = `/admin/buses/${busId}`;
   };
-
-  // Get unique fuel types for the dropdown filter
-  const fuelTypes = Array.from(new Set(buses.map((bus) => bus.fuelType)));
 
   const handleAddBus = (): void => {
     window.location.href = "/admin/buses/addBus";

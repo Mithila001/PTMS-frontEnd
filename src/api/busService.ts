@@ -94,3 +94,28 @@ export const addBus = async (busData: Omit<Bus, "id">): Promise<Bus> => {
     throw error;
   }
 };
+
+export const searchBuses = async (
+  registrationNumber: string,
+  serviceType: string
+): Promise<Bus[]> => {
+  const params = new URLSearchParams();
+  if (registrationNumber) {
+    params.append("registrationNumber", registrationNumber);
+  }
+  if (serviceType) {
+    params.append("serviceType", serviceType);
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/buses/search?${params.toString()}`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to search buses");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Failed to search buses:", error);
+    throw error;
+  }
+};

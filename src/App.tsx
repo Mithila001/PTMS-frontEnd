@@ -22,6 +22,7 @@ import LoadingSpinner from "./components/atoms/LoadingSpinner";
 import AssignmentMoreInfoPage from "./pages/admin/assignmentManagement/AssignmentMoreInfoPage";
 import ScheduledTripsMoreInfoPage from "./pages/admin/assignmentManagement/ScheduledTripsMoreInfoPage";
 import AddScheduledTripPage from "./pages/admin/assignmentManagement/AddScheduledTripPage";
+import AddAssignmentPage from "./pages/admin/assignmentManagement/AddAssignmentPage";
 
 function App() {
   const { loading, isLoggedIn } = useAuth(); // Also get isLoggedIn state
@@ -63,6 +64,7 @@ function App() {
                 path="/admin/scheduledTrips/addScheduledTrip"
                 element={<AddScheduledTripPage />}
               />
+              <Route path="/admin/assignments/addAssignment" element={<AddAssignmentPage />} />
             </Route>
             {/* If the user is logged in, redirect root to admin */}
             {isLoggedIn && <Route path="/" element={<Navigate to="/admin" replace />} />}

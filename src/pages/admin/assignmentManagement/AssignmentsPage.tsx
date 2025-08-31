@@ -103,6 +103,10 @@ const AssignmentsPage: React.FC = () => {
     },
   ];
 
+  function handleAddNewAssignment(): void {
+    window.location.href = "/admin/assignments/addAssignment";
+  }
+
   return (
     <div className="container mx-auto mt-2 p-2 bg-white">
       {/* Page Header */}
@@ -117,9 +121,7 @@ const AssignmentsPage: React.FC = () => {
             filterOptions={[]} // No dropdown filter for now
             filterLabel="Filter By"
           />
-          <PrimaryButton onClick={() => console.log("Add new assignment")}>
-            Add New Assignment
-          </PrimaryButton>
+          <PrimaryButton onClick={() => handleAddNewAssignment()}>Add New Assignment</PrimaryButton>
         </div>
       </div>
       {/* Content Table */}

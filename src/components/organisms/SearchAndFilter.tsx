@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import SearchBar from "../atoms/SearchBar";
 import DropdownFilter from "../molecules/DropdownFilter";
+import { useBusSearch } from "../../hooks/search/useBusSearch";
 
 // Defines the props for our SearchAndFilter component.
 interface SearchAndFilterProps {
@@ -17,6 +18,10 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("");
 
+  const { results, loading, error } = useBusSearch(searchTerm, selectedFilter);
+
+  const searchResults = results.map((bus) => bus.registrationNumber);
+
   // Function to handle changes in search and filter inputs.
   const handleChanges = (newSearchTerm: string, newSelectedFilter: string) => {
     setSearchTerm(newSearchTerm);
@@ -32,6 +37,10 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             searchTerm={searchTerm}
             onSearchChange={(value) => handleChanges(value, selectedFilter)}
             placeholder="Search by registration number..."
+            searchResults={searchResults} // Pass an empty array or actual search results if available.
+            onResultClick={(result) => {
+              handleChanges(result, selectedFilter);
+            }}
           />
         </div>
         <div className="w-full">
