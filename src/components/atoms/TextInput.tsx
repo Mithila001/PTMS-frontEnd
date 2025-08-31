@@ -32,8 +32,13 @@ const TextInput: React.FC<TextInputProps> = ({
   const showError = (isTouched || submitted) && errorMessage;
 
   const inputClasses = `
-    p-2 border rounded-md text-gray-800 focus:outline-none 
-    ${showError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"} 
+    p-2 border rounded-md text-gray-800
+    ${showError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"}
+    ${
+      readonly
+        ? "bg-gray-100 cursor-default focus:outline-none focus:ring-0"
+        : "focus:outline-none focus:ring-2"
+    }
     ${className}
   `;
   return (

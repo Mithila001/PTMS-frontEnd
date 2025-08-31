@@ -12,7 +12,7 @@ const ReportsPage = lazy(() => import("./ReportsPage"));
 const SettingsPage = lazy(() => import("./SettingsPage"));
 const EmployeeManagementPage = lazy(() => import("./employeeManagement/EmployeeManagementPage"));
 const AssignmentManagementPage = lazy(() => import("./assignmentManagement/AssignmentsPage"));
-const ScheduledTripsPage = lazy(() => import("./assignmentManagement/ScheduledTripsPage"));
+const ScheduledTripsPage = lazy(() => import("./scheduleManagement/ScheduledTripsPage"));
 
 const LoadingFallback: React.FC = () => (
   <div className="p-8">

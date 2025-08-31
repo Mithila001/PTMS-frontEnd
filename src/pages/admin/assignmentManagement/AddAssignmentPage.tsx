@@ -1,6 +1,6 @@
 // src/pages/admin/assignmentManagement/AddAssignmentPage.tsx
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { createAssignment } from "../../../api/assignmentService";
 import type { Assignment } from "../../../types/assignment";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
@@ -8,6 +8,9 @@ import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "../../../components/atoms/SearchBar";
+import { useBusSearch } from "../../../hooks/search/useBusSearch";
+import SearchInputForm from "../../../components/molecules/SearchInputForm";
 
 // Define an initial state for a new assignment based on the new interface
 // We'll use a type that aligns with the 'createAssignment' API call
@@ -33,7 +36,14 @@ const AddAssignmentPage: React.FC = () => {
   const [assignment, setAssignment] = useState<NewAssignmentData>(emptyAssignment);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [viewOnlyBusType, setViewOnlyBusType] = useState<string>("");
   const navigate = useNavigate();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const selectedFilter = useRef<string>("");
+
+  const { results } = useBusSearch(searchTerm, selectedFilter.current);
+  const busSearchResults = results.map((bus) => bus.registrationNumber);
 
   const handleSave = async () => {
     setLoading(true);
@@ -83,6 +93,25 @@ const AddAssignmentPage: React.FC = () => {
         <LoadingSpinner />
       </div>
     );
+  }
+
+  function handleBusSearchChanges(value: string): void {
+    const selectedBus = results.find((bus) => bus.registrationNumber === value);
+
+    if (selectedBus) {
+      // Update the busId and busRegistrationNumber in the assignment state
+      setAssignment((prevAssignment) => ({
+        ...prevAssignment,
+        busId: selectedBus.id,
+        busRegistrationNumber: selectedBus.registrationNumber,
+      }));
+
+      // Set the bus type to the state for the read-only input
+      setViewOnlyBusType(selectedBus.serviceType);
+    }
+    // Implement your search logic here
+    setSearchTerm(value);
+    //console.log("Search term changed:", value);
   }
 
   return (
@@ -141,6 +170,26 @@ const AddAssignmentPage: React.FC = () => {
               type="text"
               value={assignment.status}
               onChange={handleTextInputChange}
+            />
+            <SearchInputForm
+              id="bus-search"
+              label="Search for a Bus"
+              searchTerm={searchTerm}
+              onSearchChange={(value) => handleBusSearchChanges(value)}
+              searchResults={busSearchResults}
+              onResultClick={(value) => {
+                handleBusSearchChanges(value);
+              }}
+              placeholder="Enter bus number or route"
+            />
+
+            <TextInput
+              id="bus-type"
+              label="Bus Type"
+              type="text"
+              value={viewOnlyBusType}
+              onChange={() => {}}
+              readonly={true}
             />
           </form>
         </div>

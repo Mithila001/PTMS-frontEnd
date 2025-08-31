@@ -20,8 +20,8 @@ import Footer from "./components/shared/Footer";
 import { useAuth } from "./contexts/AuthContext";
 import LoadingSpinner from "./components/atoms/LoadingSpinner";
 import AssignmentMoreInfoPage from "./pages/admin/assignmentManagement/AssignmentMoreInfoPage";
-import ScheduledTripsMoreInfoPage from "./pages/admin/assignmentManagement/ScheduledTripsMoreInfoPage";
-import AddScheduledTripPage from "./pages/admin/assignmentManagement/AddScheduledTripPage";
+import ScheduledTripsMoreInfoPage from "./pages/admin/scheduleManagement/ScheduledTripsMoreInfoPage";
+import AddScheduledTripPage from "./pages/admin/scheduleManagement/AddScheduledTripPage";
 import AddAssignmentPage from "./pages/admin/assignmentManagement/AddAssignmentPage";
 
 function App() {

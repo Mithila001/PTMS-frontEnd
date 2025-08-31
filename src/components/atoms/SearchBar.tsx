@@ -1,14 +1,33 @@
+// ptms-frontEnd\src\components\atoms\SearchBar.tsx
+
 import React, { useState } from "react";
 
-// Defines the props that our SearchBar component will accept.
+/**
+ * @description Props for the SearchBar component.
+ */
 interface SearchBarProps {
-  searchTerm: string; // The current value of the search input.
-  onSearchChange: (searchTerm: string) => void; // Callback function to handle changes in the search input.
-  placeholder?: string; // Optional text to display when the input is empty.
-  searchResults?: string[]; // A new prop to pass the search results to the component.
-  onResultClick?: (result: string) => void; // A new prop to handle clicks on a result item.
+  /** The current controlled value of the input field. */
+  searchTerm: string;
+  /** Callback function to handle changes in the search input. */
+  onSearchChange: (searchTerm: string) => void;
+  /** Optional text to display when the input is empty. */
+  placeholder?: string;
+  /** Array of strings to be displayed as search results in the dropdown. */
+  searchResults?: string[];
+  /** Callback function to handle clicks on a search result item. */
+  onResultClick?: (result: string) => void;
 }
 
+/**
+ * A reusable search bar component with a dynamic dropdown for displaying search results.
+ * This component is designed as a controlled component, with its state managed by a parent.
+ *
+ * @param searchTerm  - The current controlled value of the input field.
+ * @param onSearchChange - Callback function to handle changes in the search input.
+ * @param placeholder - Optional text to display when the input is empty.
+ * @param searchResults - Array of strings to be displayed as search results.
+ * @param onResultClick - Callback for when a search result is selected.
+ */
 const SearchBar: React.FC<SearchBarProps> = ({
   searchTerm,
   onSearchChange,
@@ -18,9 +37,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // A brief explanation of the onMouseDown event:
-  // The onMouseDown event fires before the onBlur event on the input.
-  // This ensures that our click handler is always called before the dropdown disappears.
+  // The onMouseDown event on the list item is used to handle clicks before the input's onBlur event fires.
+  // This prevents the dropdown from closing before the user's click is registered.
 
   return (
     <div className="relative">
@@ -30,10 +48,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onChange={(e) => onSearchChange(e.target.value)}
         onFocus={() => setIsDropdownOpen(true)}
         onBlur={() => {
-          // Delay closing the dropdown to allow for a click on a list item.
+          // Delay closing the dropdown to allow time for a click event on a result item to fire.
           setTimeout(() => {
             setIsDropdownOpen(false);
-          }, 150); // Increased the timeout slightly for better reliability.
+          }, 150);
         }}
         placeholder={placeholder}
         className="w-full pl-10 pr-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -53,7 +71,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </svg>
       </div>
 
-      {/* Conditionally render the dropdown list */}
       {isDropdownOpen && searchResults && searchResults.length > 0 && onResultClick && (
         <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {searchResults.map((result, index) => (
