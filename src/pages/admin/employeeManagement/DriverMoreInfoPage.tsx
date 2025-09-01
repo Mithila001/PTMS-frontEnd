@@ -6,10 +6,10 @@ import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
 import type { Driver } from "../../../types/employee";
-import { deleteDriver, getDriverById, updateDriver } from "../../../api/employeeService";
 import Checkbox from "../../../components/atoms/Checkbox";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
+import { deleteDriver, getDriverById, updateDriver } from "../../../api/driverService";
 
 const DriverMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

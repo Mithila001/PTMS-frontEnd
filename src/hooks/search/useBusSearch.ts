@@ -4,7 +4,7 @@ import type { Bus } from "../../types/bus";
 
 // Defines the shape of the data that our hook will return.
 interface BusSearchState {
-  results: Bus[];
+  busSearchResults: Bus[];
   loading: boolean;
   error: string | null;
 }
@@ -14,11 +14,11 @@ interface BusSearchState {
  * It manages the fetching, loading, and error states.
  * @param registrationNumber The search term for the bus registration number.
  * @param serviceType The filter for the bus service type.
- * @returns An object containing the search results, loading state, and any errors.
+ * @returns An object containing the search busSearchResults, loading state, and any errors.
  */
 export const useBusSearch = (registrationNumber: string, serviceType: string): BusSearchState => {
   const [state, setState] = useState<BusSearchState>({
-    results: [],
+    busSearchResults: [],
     loading: false,
     error: null,
   });
@@ -35,7 +35,7 @@ export const useBusSearch = (registrationNumber: string, serviceType: string): B
     const fetchBuses = async () => {
       // Don't search if both fields are empty.
       if (!registrationNumber && !serviceType) {
-        setState({ results: [], loading: false, error: null });
+        setState({ busSearchResults: [], loading: false, error: null });
         return;
       }
 
@@ -44,12 +44,12 @@ export const useBusSearch = (registrationNumber: string, serviceType: string): B
       try {
         const data = await searchBuses(registrationNumber, serviceType);
         if (!signal.aborted) {
-          setState({ results: data, loading: false, error: null });
+          setState({ busSearchResults: data, loading: false, error: null });
         }
       } catch (err) {
         if (!signal.aborted) {
           setState({
-            results: [],
+            busSearchResults: [],
             loading: false,
             error: err instanceof Error ? err.message : "An unknown error occurred.",
           });

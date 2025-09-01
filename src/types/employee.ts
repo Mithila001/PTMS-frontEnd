@@ -28,3 +28,19 @@ export interface Driver extends Employee {
 }
 
 export type EmployeeType = "driver" | "conductor";
+
+export type EmployeeSearchResult = {
+  id: number;
+  nicNumber: string;
+  firstName: string;
+  lastName: string;
+  contactNumber: string;
+};
+
+export type DriverSearchResult = EmployeeSearchResult & {
+  drivingLicenseNumber: string;
+};
+
+export type ConductorSearchResult = EmployeeSearchResult & {
+  conductorLicenseNumber: string;
+};

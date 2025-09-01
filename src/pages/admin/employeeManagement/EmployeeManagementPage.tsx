@@ -5,9 +5,10 @@ import EmployeeTable from "../../../components/molecules/EmployeeTable";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import type { Conductor, Driver } from "../../../types/employee";
-import { getAllDrivers, getAllConductors } from "../../../api/employeeService";
 import type { Column } from "../../../components/molecules/DataTable";
 import DataTable from "../../../components/molecules/DataTable";
+import { getAllDrivers } from "../../../api/driverService";
+import { getAllConductors } from "../../../api/conductorService";
 
 const EmployeeManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"drivers" | "conductors">("drivers");

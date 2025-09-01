@@ -5,7 +5,8 @@ import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import Checkbox from "../../../components/atoms/Checkbox";
-import { createDriver, createConductor } from "../../../api/employeeService";
+import { createConductor } from "../../../api/conductorService";
+import { createDriver } from "../../../api/driverService";
 
 // Base empty employee object
 const emptyEmployee: Omit<Employee, "id"> = {

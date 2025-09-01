@@ -18,9 +18,9 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("");
 
-  const { results, loading, error } = useBusSearch(searchTerm, selectedFilter);
+  const { busSearchResults, loading, error } = useBusSearch(searchTerm, selectedFilter);
 
-  const searchResults = results.map((bus) => bus.registrationNumber);
+  const searchResults = busSearchResults.map((bus) => bus.registrationNumber);
 
   // Function to handle changes in search and filter inputs.
   const handleChanges = (newSearchTerm: string, newSelectedFilter: string) => {

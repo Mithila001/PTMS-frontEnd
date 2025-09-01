@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import SearchBar from "../../../components/atoms/SearchBar";
 import { useBusSearch } from "../../../hooks/search/useBusSearch";
 import SearchInputForm from "../../../components/molecules/SearchInputForm";
+import { useEmployeeSearch } from "../../../hooks/search/useEmployeeSearch";
 
 // Define an initial state for a new assignment based on the new interface
 // We'll use a type that aligns with the 'createAssignment' API call
@@ -42,8 +43,21 @@ const AddAssignmentPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const selectedFilter = useRef<string>("");
 
-  const { results } = useBusSearch(searchTerm, selectedFilter.current);
-  const busSearchResults = results.map((bus) => bus.registrationNumber);
+  const { busSearchResults } = useBusSearch(searchTerm, selectedFilter.current);
+  const busSearchResultsFiltered = busSearchResults.map((bus) => bus.registrationNumber);
+
+  const [viewOnlyDriverNic, setViewOnlyDriverNic] = useState<string>("");
+  const [driverName, setDriverName] = useState("");
+  const { employeeSearchResults } = useEmployeeSearch(
+    "driver",
+    undefined,
+    driverName,
+    undefined,
+    undefined
+  );
+  const driverSearchResultsFiltered = employeeSearchResults.map(
+    (driver) => driver.firstName + " " + driver.lastName
+  );
 
   const handleSave = async () => {
     setLoading(true);
@@ -96,7 +110,7 @@ const AddAssignmentPage: React.FC = () => {
   }
 
   function handleBusSearchChanges(value: string): void {
-    const selectedBus = results.find((bus) => bus.registrationNumber === value);
+    const selectedBus = busSearchResults.find((bus) => bus.registrationNumber === value);
 
     if (selectedBus) {
       // Update the busId and busRegistrationNumber in the assignment state
@@ -114,6 +128,25 @@ const AddAssignmentPage: React.FC = () => {
     //console.log("Search term changed:", value);
   }
 
+  const handleDriverSearchChanges = (value: string): void => {
+    setDriverName(value);
+    const selectedDriver = employeeSearchResults.find(
+      (driver) => driver.firstName + " " + driver.lastName === value
+    );
+
+    if (selectedDriver) {
+      setAssignment((prevAssignment) => ({
+        ...prevAssignment,
+        driverId: selectedDriver.id,
+        driverName: selectedDriver.firstName + " " + selectedDriver.lastName,
+      }));
+
+      setViewOnlyDriverNic(selectedDriver?.nicNumber);
+    }
+
+    setDriverName(value);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex space-x-8">
       <div className="flex flex-col flex-grow bg-white rounded-lg shadow-xl p-8">
@@ -123,6 +156,25 @@ const AddAssignmentPage: React.FC = () => {
 
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <SearchInputForm
+              id="driverSearch-search"
+              label="Search for a Driver"
+              searchTerm={driverName}
+              onSearchChange={(value) => handleDriverSearchChanges(value)}
+              searchResults={driverSearchResultsFiltered}
+              onResultClick={(value) => {
+                handleDriverSearchChanges(value);
+              }}
+              placeholder="Enter driver name"
+            />
+            <TextInput
+              id="driver-nic"
+              label="Driver NIC"
+              type="text"
+              value={viewOnlyDriverNic}
+              onChange={() => {}}
+              readonly={true}
+            />
             {/* Scheduled Trip ID */}
             <TextInput
               id="scheduledTripId"
@@ -176,7 +228,7 @@ const AddAssignmentPage: React.FC = () => {
               label="Search for a Bus"
               searchTerm={searchTerm}
               onSearchChange={(value) => handleBusSearchChanges(value)}
-              searchResults={busSearchResults}
+              searchResults={busSearchResultsFiltered}
               onResultClick={(value) => {
                 handleBusSearchChanges(value);
               }}
