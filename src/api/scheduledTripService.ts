@@ -1,6 +1,6 @@
 // src/api/scheduledTripService.ts
 
-import type { ScheduledTrip } from "../types/assignment";
+import type { ScheduledTrip, TripDirection } from "../types/assignment";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -124,5 +124,46 @@ export const deleteScheduledTrip = async (id: number): Promise<boolean> => {
   } catch (error) {
     console.error(`Failed to delete scheduled trip with ID ${id}:`, error);
     throw new Error("Failed to delete scheduled trip");
+  }
+};
+
+// Add this new function to ptms-frontEnd\src\api\scheduledTripService.ts
+
+/**
+ * Searches for scheduled trips based on optional criteria.
+ * This function calls the GET /api/scheduled-trips/search-trips endpoint.
+ * @param routeNumber The route number to search for (optional).
+ * @param direction The trip direction to search for ("UP" or "DOWN") (optional).
+ * @returns A promise that resolves to an array of matching ScheduledTrip objects.
+ */
+export const searchScheduledTrips = async (
+  routeNumber?: string,
+  direction?: TripDirection
+): Promise<ScheduledTrip[]> => {
+  try {
+    const params = new URLSearchParams();
+    if (routeNumber) {
+      params.append("routeNumber", routeNumber);
+    }
+    if (direction) {
+      params.append("direction", direction);
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/scheduled-trips/search-trips?${params.toString()}`,
+      {
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: ScheduledTrip[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to search scheduled trips:", error);
+    throw error;
   }
 };

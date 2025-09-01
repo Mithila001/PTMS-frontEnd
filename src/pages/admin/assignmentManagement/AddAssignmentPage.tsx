@@ -12,6 +12,8 @@ import SearchBar from "../../../components/atoms/SearchBar";
 import { useBusSearch } from "../../../hooks/search/useBusSearch";
 import SearchInputForm from "../../../components/molecules/SearchInputForm";
 import { useEmployeeSearch } from "../../../hooks/search/useEmployeeSearch";
+import { useScheduledTripSearch } from "../../../hooks/search/useScheduledTripSearch";
+import type { Route } from "../../../types/route";
 
 // Define an initial state for a new assignment based on the new interface
 // We'll use a type that aligns with the 'createAssignment' API call
@@ -46,17 +48,41 @@ const AddAssignmentPage: React.FC = () => {
   const { busSearchResults } = useBusSearch(searchTerm, selectedFilter.current);
   const busSearchResultsFiltered = busSearchResults.map((bus) => bus.registrationNumber);
 
+  // Driver Search
   const [viewOnlyDriverNic, setViewOnlyDriverNic] = useState<string>("");
   const [driverName, setDriverName] = useState("");
-  const { employeeSearchResults } = useEmployeeSearch(
+  const { employeeSearchResults: driverSearchResults } = useEmployeeSearch(
     "driver",
     undefined,
     driverName,
     undefined,
     undefined
   );
-  const driverSearchResultsFiltered = employeeSearchResults.map(
+  const driverSearchResultsFiltered = driverSearchResults.map(
     (driver) => driver.firstName + " " + driver.lastName
+  );
+
+  // Conductor Search
+  const [conductorViewOnlyNic, setConductorViewOnlyNic] = useState<string>("");
+  const [conductorName, setConductorName] = useState("");
+  const { employeeSearchResults: conductorSearchResults } = useEmployeeSearch(
+    "conductor",
+    undefined,
+    conductorName,
+    undefined,
+    undefined
+  );
+  const conductorSearchResultsFiltered = conductorSearchResults.map(
+    (conductor) => conductor.firstName + " " + conductor.lastName
+  );
+
+  // Scheduled Trip Search
+  const [scheduledTripViewOnlyRoute, setScheduledTripViewOnlyRoute] = useState<Route | null>(null);
+  const [scheduledTripRouteNumber, setScheduledTripRouteNumber] = useState<string>("");
+  const { scheduledTripSearchResults } = useScheduledTripSearch(scheduledTripRouteNumber);
+
+  const scheduledTripSearchResultsFiltered = scheduledTripSearchResults.map(
+    (trip) => `${trip.route.routeNumber}`
   );
 
   const handleSave = async () => {
@@ -130,7 +156,7 @@ const AddAssignmentPage: React.FC = () => {
 
   const handleDriverSearchChanges = (value: string): void => {
     setDriverName(value);
-    const selectedDriver = employeeSearchResults.find(
+    const selectedDriver = driverSearchResults.find(
       (driver) => driver.firstName + " " + driver.lastName === value
     );
 
@@ -147,6 +173,43 @@ const AddAssignmentPage: React.FC = () => {
     setDriverName(value);
   };
 
+  const handleConductorSearchChanges = (value: string): void => {
+    setConductorName(value);
+    const selectedConductor = conductorSearchResults.find(
+      (conductor) => conductor.firstName + " " + conductor.lastName === value
+    );
+
+    if (selectedConductor) {
+      setAssignment((prevAssignment) => ({
+        ...prevAssignment,
+        conductorId: selectedConductor.id,
+        conductorName: selectedConductor.firstName + " " + selectedConductor.lastName,
+      }));
+
+      setConductorViewOnlyNic(selectedConductor?.nicNumber);
+    }
+
+    setConductorName(value);
+  };
+
+  const handleScheduledTripSearch = (value: string): void => {
+    setScheduledTripRouteNumber(value);
+    const selectedTrip = scheduledTripSearchResults.find(
+      (trip) => `${trip.route.routeNumber}` === value
+    );
+
+    if (selectedTrip) {
+      setAssignment((prevAssignment) => ({
+        ...prevAssignment,
+        scheduledTripId: selectedTrip.id,
+      }));
+
+      setScheduledTripViewOnlyRoute(selectedTrip.route);
+    }
+
+    setScheduledTripRouteNumber(value);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex space-x-8">
       <div className="flex flex-col flex-grow bg-white rounded-lg shadow-xl p-8">
@@ -156,6 +219,44 @@ const AddAssignmentPage: React.FC = () => {
 
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <SearchInputForm
+              id="scheduledTrip-search"
+              label="Search for a Scheduled Trip"
+              searchTerm={scheduledTripRouteNumber}
+              onSearchChange={(value) => setScheduledTripRouteNumber(value)}
+              searchResults={scheduledTripSearchResultsFiltered}
+              onResultClick={(value) => {
+                handleScheduledTripSearch(value);
+              }}
+              placeholder="Enter scheduled trip route number"
+            />
+            <TextInput
+              id="route-origin"
+              label="Route Origin"
+              type="text"
+              value={scheduledTripViewOnlyRoute?.origin || ""}
+              onChange={() => {}}
+              readonly={true}
+            />
+            <SearchInputForm
+              id="conductorSearch-search"
+              label="Search for a Conductor"
+              searchTerm={conductorName}
+              onSearchChange={(value) => handleConductorSearchChanges(value)}
+              searchResults={conductorSearchResultsFiltered}
+              onResultClick={(value) => {
+                handleConductorSearchChanges(value);
+              }}
+              placeholder="Enter conductor name"
+            />
+            <TextInput
+              id="conductor-nic"
+              label="Conductor NIC"
+              type="text"
+              value={conductorViewOnlyNic}
+              onChange={() => {}}
+              readonly={true}
+            />
             <SearchInputForm
               id="driverSearch-search"
               label="Search for a Driver"
