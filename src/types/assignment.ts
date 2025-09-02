@@ -15,7 +15,7 @@ export interface ScheduledTrip {
 
 export interface Assignment {
   id: number;
-  scheduledTrip: ScheduledTrip;
+  scheduledTrip: string;
   busId: number;
   driverId: number;
   conductorId: number;

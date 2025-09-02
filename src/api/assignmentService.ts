@@ -39,6 +39,7 @@ export const getAssignmentById = async (id: number): Promise<Assignment | null> 
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data: Assignment | null = await response.json();
+    console.log(`Fetched assignment with ID ${id}:`, data);
     return data;
   } catch (error) {
     console.error(`Failed to fetch assignment with ID ${id}:`, error);

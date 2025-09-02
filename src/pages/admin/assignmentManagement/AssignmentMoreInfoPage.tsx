@@ -161,13 +161,7 @@ const AssignmentMoreInfoPage: React.FC = () => {
               onChange={handleTextInputChange}
               readonly={true}
             />
-            {/* Route Number */}
-            <TextInput
-              id="routeNumber"
-              label="Route Number"
-              value={assignment.scheduledTrip?.route.routeNumber || ""}
-              onChange={handleTextInputChange}
-            />
+
             {/* Bus Registration Number */}
             <TextInput
               id="busRegistrationNumber"

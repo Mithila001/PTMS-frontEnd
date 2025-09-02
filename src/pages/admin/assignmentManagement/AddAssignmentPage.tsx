@@ -238,6 +238,14 @@ const AddAssignmentPage: React.FC = () => {
               onChange={() => {}}
               readonly={true}
             />
+            <TextInput
+              id="route-destination"
+              label="Route Destination"
+              type="text"
+              value={scheduledTripViewOnlyRoute?.destination || ""}
+              onChange={() => {}}
+              readonly={true}
+            />
             <SearchInputForm
               id="conductorSearch-search"
               label="Search for a Conductor"

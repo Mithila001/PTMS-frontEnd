@@ -43,9 +43,7 @@ const AssignmentsPage: React.FC = () => {
 
   useEffect(() => {
     const newFilteredAssignments = assignments.filter((assignment) =>
-      assignment.scheduledTrip.route.routeNumber
-        .toLowerCase()
-        .includes(filters.searchTerm.toLowerCase())
+      assignment.date.toLowerCase().includes(filters.searchTerm.toLowerCase())
     );
     setFilteredAssignments(newFilteredAssignments);
   }, [assignments, filters]); // UI styles from the example
@@ -68,9 +66,9 @@ const AssignmentsPage: React.FC = () => {
   const columns: Column<Assignment>[] = [
     { header: "ID", key: "id" },
     {
-      header: "Route",
+      header: "Date",
       key: "scheduledTrip",
-      render: (assignment) => assignment.scheduledTrip?.route.routeNumber || "N/A",
+      render: (assignment) => assignment.date || "N/A",
     },
     {
       header: "Bus",
