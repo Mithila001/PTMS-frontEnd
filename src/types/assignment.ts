@@ -15,13 +15,13 @@ export interface ScheduledTrip {
 
 export interface Assignment {
   id: number;
-  scheduledTrip: string;
+  scheduledTripId: string;
   busId: number;
   driverId: number;
   conductorId: number;
-  date: string;
-  actualStartTime?: string | null;
-  actualEndTime?: string | null;
+  date: Date | null;
+  actualStartTime?: Date | null;
+  actualEndTime?: Date | null;
   status: AssignmentStatus;
   driverName?: string;
   conductorName?: string;

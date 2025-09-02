@@ -2,34 +2,45 @@
 
 import React, { useRef, useState } from "react";
 import { createAssignment } from "../../../api/assignmentService";
-import type { Assignment } from "../../../types/assignment";
+import type { Assignment, AssignmentStatus } from "../../../types/assignment";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { useNavigate } from "react-router-dom";
-import SearchBar from "../../../components/atoms/SearchBar";
 import { useBusSearch } from "../../../hooks/search/useBusSearch";
 import SearchInputForm from "../../../components/molecules/SearchInputForm";
 import { useEmployeeSearch } from "../../../hooks/search/useEmployeeSearch";
 import { useScheduledTripSearch } from "../../../hooks/search/useScheduledTripSearch";
 import type { Route } from "../../../types/route";
+import DateInput from "../../../components/atoms/DateInput";
+import TimeInput from "../../../components/atoms/TimeInput";
 
 // Define an initial state for a new assignment based on the new interface
 // We'll use a type that aligns with the 'createAssignment' API call
 type NewAssignmentData = Omit<Assignment, "id" | "scheduledTrip"> & {
-  scheduledTripId: number;
+  scheduledTripId: string;
+  actualStartTime: Date | null;
+  actualEndTime: Date | null;
+  date: Date | null;
+  busId: number;
+  driverId: number;
+  conductorId: number;
+  status: AssignmentStatus;
+  driverName?: string;
+  conductorName?: string;
+  busRegistrationNumber?: string;
 };
 
 const emptyAssignment: NewAssignmentData = {
-  scheduledTripId: 0,
+  scheduledTripId: "",
   busId: 0,
   driverId: 0,
   conductorId: 0,
-  date: "",
+  date: new Date(),
   actualStartTime: null,
   actualEndTime: null,
-  status: "IN_PROGRESS", // You may want to set a default status
+  status: "IN_PROGRESS",
   driverName: "",
   conductorName: "",
   busRegistrationNumber: "",
@@ -89,23 +100,26 @@ const AddAssignmentPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      // Validate that all required IDs are provided and are valid numbers
+      // Basic validation remains
       if (
         !assignment.scheduledTripId ||
         !assignment.busId ||
         !assignment.driverId ||
-        !assignment.conductorId
+        !assignment.conductorId ||
+        !assignment.date
       ) {
-        setError("All IDs (Scheduled Trip, Bus, Driver, Conductor) are required.");
+        setError("All fields (Scheduled Trip, Bus, Driver, Conductor, Date) are required.");
         setLoading(false);
         return;
       }
 
+      // Pass the state object directly to the API function
       await createAssignment(assignment);
+
       console.log("Assignment created successfully.");
       alert("Assignment created successfully! 👍");
-      setAssignment(emptyAssignment); // Reset form after successful submission
-      navigate("/admin/assignments"); // Redirect to the assignments list page
+      setAssignment(emptyAssignment);
+      navigate("/admin/assignments");
     } catch (error) {
       console.error("Failed to save assignment details:", error);
       setError("Failed to create assignment. Please try again. 😢");
@@ -201,13 +215,25 @@ const AddAssignmentPage: React.FC = () => {
     if (selectedTrip) {
       setAssignment((prevAssignment) => ({
         ...prevAssignment,
-        scheduledTripId: selectedTrip.id,
+        scheduledTripId: selectedTrip.id.toString(),
       }));
 
       setScheduledTripViewOnlyRoute(selectedTrip.route);
     }
 
     setScheduledTripRouteNumber(value);
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    setAssignment((prev) => ({ ...prev, date }));
+  };
+
+  const handleStartTimeChange = (time: Date | null) => {
+    setAssignment((prev) => ({ ...prev, actualStartTime: time }));
+  };
+
+  const handleEndTimeChange = (time: Date | null) => {
+    setAssignment((prev) => ({ ...prev, actualEndTime: time }));
   };
 
   return (
@@ -219,6 +245,11 @@ const AddAssignmentPage: React.FC = () => {
 
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            {/* Route Section */}
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="text-xl font-semibold text-gray-700 mt-6 mb-2">Route</h3>
+              <hr className="mb-4 border-gray-300" />
+            </div>
             <SearchInputForm
               id="scheduledTrip-search"
               label="Search for a Scheduled Trip"
@@ -230,22 +261,30 @@ const AddAssignmentPage: React.FC = () => {
               }}
               placeholder="Enter scheduled trip route number"
             />
-            <TextInput
-              id="route-origin"
-              label="Route Origin"
-              type="text"
-              value={scheduledTripViewOnlyRoute?.origin || ""}
-              onChange={() => {}}
-              readonly={true}
-            />
-            <TextInput
-              id="route-destination"
-              label="Route Destination"
-              type="text"
-              value={scheduledTripViewOnlyRoute?.destination || ""}
-              onChange={() => {}}
-              readonly={true}
-            />
+            <div className="flex flex-col space-y-4">
+              <TextInput
+                id="route-origin"
+                label="Route Origin"
+                type="text"
+                value={scheduledTripViewOnlyRoute?.origin || ""}
+                onChange={() => {}}
+                readonly={true}
+              />
+              <TextInput
+                id="route-destination"
+                label="Route Destination"
+                type="text"
+                value={scheduledTripViewOnlyRoute?.destination || ""}
+                onChange={() => {}}
+                readonly={true}
+              />
+            </div>
+
+            {/* Employee Section */}
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="text-xl font-semibold text-gray-700 mt-6 mb-2">Employee</h3>
+              <hr className="mb-4 border-gray-300" />
+            </div>
             <SearchInputForm
               id="conductorSearch-search"
               label="Search for a Conductor"
@@ -284,54 +323,12 @@ const AddAssignmentPage: React.FC = () => {
               onChange={() => {}}
               readonly={true}
             />
-            {/* Scheduled Trip ID */}
-            <TextInput
-              id="scheduledTripId"
-              label="Scheduled Trip ID"
-              type="number"
-              value={String(assignment.scheduledTripId)}
-              onChange={handleTextInputChange}
-            />
-            {/* Bus ID */}
-            <TextInput
-              id="busId"
-              label="Bus ID"
-              type="number"
-              value={String(assignment.busId)}
-              onChange={handleTextInputChange}
-            />
-            {/* Driver ID */}
-            <TextInput
-              id="driverId"
-              label="Driver ID"
-              type="number"
-              value={String(assignment.driverId)}
-              onChange={handleTextInputChange}
-            />
-            {/* Conductor ID */}
-            <TextInput
-              id="conductorId"
-              label="Conductor ID"
-              type="number"
-              value={String(assignment.conductorId)}
-              onChange={handleTextInputChange}
-            />
-            {/* Assignment Date */}
-            <TextInput
-              id="date"
-              label="Date"
-              type="date"
-              value={assignment.date}
-              onChange={handleTextInputChange}
-            />
-            {/* Status */}
-            <TextInput
-              id="status"
-              label="Status"
-              type="text"
-              value={assignment.status}
-              onChange={handleTextInputChange}
-            />
+
+            {/* Bus Section */}
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="text-xl font-semibold text-gray-700 mt-6 mb-2">Bus</h3>
+              <hr className="mb-4 border-gray-300" />
+            </div>
             <SearchInputForm
               id="bus-search"
               label="Search for a Bus"
@@ -343,7 +340,6 @@ const AddAssignmentPage: React.FC = () => {
               }}
               placeholder="Enter bus number or route"
             />
-
             <TextInput
               id="bus-type"
               label="Bus Type"
@@ -352,8 +348,36 @@ const AddAssignmentPage: React.FC = () => {
               onChange={() => {}}
               readonly={true}
             />
+
+            {/* Other Info Section */}
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="text-xl font-semibold text-gray-700 mt-6 mb-2">Other Info</h3>
+              <hr className="mb-4 border-gray-300" />
+            </div>
+            <DateInput id="date" label="Date" value={assignment.date} onChange={handleDateChange} />
+            <TextInput
+              id="status"
+              label="Status"
+              type="text"
+              value={assignment.status}
+              onChange={() => {}}
+              readonly={true}
+            />
+            <TimeInput
+              id="actualStartTime"
+              label="Start Time"
+              value={assignment.actualStartTime}
+              onChange={handleStartTimeChange}
+            />
+            <TimeInput
+              id="actualEndTime"
+              label="End Time"
+              value={assignment.actualEndTime}
+              onChange={handleEndTimeChange}
+            />
           </form>
         </div>
+
         <div className="mt-8 pt-4 border-t-2 border-gray-200 flex justify-end space-x-4 h-16 items-center">
           <PrimaryButton
             onClick={handleSave}

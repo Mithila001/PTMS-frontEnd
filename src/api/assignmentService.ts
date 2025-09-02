@@ -56,13 +56,21 @@ export const getAssignmentById = async (id: number): Promise<Assignment | null> 
 export const createAssignment = async (
   assignmentData: Omit<Assignment, "id" | "scheduledTrip">
 ): Promise<Assignment> => {
+  // Convert the Date objects to ISO string format
+  const formattedPayload = {
+    ...assignmentData,
+    date: assignmentData.date?.toISOString().split("T")[0],
+    actualStartTime: assignmentData.actualStartTime?.toISOString() || null,
+    actualEndTime: assignmentData.actualEndTime?.toISOString() || null,
+  };
+
   try {
     const response = await fetch(`${API_BASE_URL}/assignments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(assignmentData),
+      body: JSON.stringify(formattedPayload),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
