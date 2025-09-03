@@ -4,42 +4,41 @@ import React, { useState, useEffect } from "react";
 import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import DataTable from "../../../components/molecules/DataTable";
 import type { Column } from "../../../components/molecules/DataTable";
 import type { ScheduledTrip } from "../../../types/assignment";
 import { getAllScheduledTrips } from "../../../api/scheduledTripService";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../../../contexts/ToastContext";
 
 const ScheduledTripsPage: React.FC = () => {
   const [scheduledTrips, setScheduledTrips] = useState<ScheduledTrip[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [filteredScheduledTrips, setFilteredScheduledTrips] = useState<ScheduledTrip[]>([]);
   const [filters, setFilters] = useState({ searchTerm: "" });
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   // Fetches data when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      setError(null);
       try {
         const scheduledTripsData = await getAllScheduledTrips();
         console.log("Fetched scheduled trips:", scheduledTripsData);
         setScheduledTrips(scheduledTripsData);
       } catch (e: unknown) {
         if (e instanceof Error) {
-          setError(e.message);
+          showToast(e.message, "error");
         } else {
-          setError("An unknown error occurred while fetching scheduled trips.");
+          showToast("An unknown error occurred while fetching scheduled trips.", "error");
         }
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [showToast]);
 
   // Filter scheduled trips based on search term
   useEffect(() => {
@@ -59,10 +58,6 @@ const ScheduledTripsPage: React.FC = () => {
 
   if (loading) {
     return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return <ErrorAlert errorMessage={error} />;
   }
 
   // Define the columns for the DataTable
@@ -108,7 +103,7 @@ const ScheduledTripsPage: React.FC = () => {
   ];
 
   function handleAddScheduledTrip(): void {
-    window.location.href = "/admin/scheduledTrips/addScheduledTrip";
+    navigate("/admin/scheduledTrips/addScheduledTrip");
   }
 
   return (

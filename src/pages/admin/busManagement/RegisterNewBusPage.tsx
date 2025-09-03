@@ -1,13 +1,14 @@
+// ptms-frontEnd\src\pages\admin\busManagement\RegisterNewBusPage.tsx
+
 import React, { useState } from "react";
 import { addBus } from "../../../api/busService";
 import type { Bus } from "../../../types/bus";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import Checkbox from "../../../components/atoms/Checkbox";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
-import Dropdown from "../../../components/atoms/Dropdown"; // NEW IMPORT
-import { useApplicationData } from "../../../contexts/ApplicationDataContext"; // NEW IMPORT
+import Dropdown from "../../../components/atoms/Dropdown";
+import { useApplicationData } from "../../../contexts/ApplicationDataContext";
 import { formatErrorMessage } from "../../../utils/errorFormatter";
 import { useToast } from "../../../contexts/ToastContext";
 import { busValidationSchema } from "../../../schemas/busValidation";
@@ -17,15 +18,15 @@ const emptyBus: Omit<Bus, "id"> = {
   registrationNumber: "",
   make: "",
   model: "",
-  yearOfManufacture: new Date().getFullYear(), // Default to the current year
+  yearOfManufacture: new Date().getFullYear(),
   fuelType: "",
-  serviceType: "", // NEW FIELD
-  comfortType: "", // NEW FIELD
+  serviceType: "",
+  comfortType: "",
   seatingCapacity: 0,
   standingCapacity: 0,
   ntcPermitNumber: 0,
   active: true,
-  isA_C: false, // Updated property name
+  isA_C: false,
 };
 
 const RegisterNewBusPage: React.FC = () => {
@@ -49,7 +50,7 @@ const RegisterNewBusPage: React.FC = () => {
     try {
       await addBus(bus);
       console.log("Bus created successfully.");
-      alert("Bus created successfully! 👍");
+      showToast("Bus created successfully!", "success");
       setBus(emptyBus); // Reset form after successful submission
       setSubmitted(false);
     } catch (error) {

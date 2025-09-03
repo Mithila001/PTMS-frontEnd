@@ -1,14 +1,16 @@
+// src/pages/admin/routeManagment/AddRoutePage.tsx
+
 import React, { useState } from "react";
 import { createRoute } from "../../../api/routeService";
 import type { Route } from "../../../types/route";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import TextArea from "../../../components/atoms/TextArea";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import L from "leaflet";
 import { parseWKTLineString } from "../../../utils/wktParser";
+import { useToast } from "../../../contexts/ToastContext";
 
 // An empty object representing a new route
 const emptyRoute: Omit<Route, "id"> = {
@@ -22,10 +24,11 @@ const emptyRoute: Omit<Route, "id"> = {
 const AddRoutePage: React.FC = () => {
   const [route, setRoute] = useState<Omit<Route, "id">>(emptyRoute);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isWktValid, setIsWktValid] = useState<boolean>(true);
   const [routePath, setRoutePath] = useState<L.LatLngExpression[]>([]);
   const defaultCenter: L.LatLngExpression = [6.926591, 79.838035];
-  const [isWktValid, setIsWktValid] = useState<boolean>(true);
+
+  const { showToast } = useToast();
 
   // This function updates the component's state as the user types
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -57,34 +60,32 @@ const AddRoutePage: React.FC = () => {
 
     if (isValid) {
       setRoutePath(parsedPath);
-      setError(null);
       setIsWktValid(true);
     } else {
-      setError("Invalid WKT format. Please ensure it is a valid LINESTRING. 😥");
+      showToast("Invalid WKT format. Please ensure it is a valid LINESTRING.", "error");
       setIsWktValid(false);
     }
   };
 
   const handleSave = async () => {
     setLoading(true);
-    setError(null);
 
     // Basic validation to ensure required fields are not empty
     if (!route.routeNumber || !route.origin || !route.destination || !route.routePath) {
-      setError("Please fill out all required fields.");
+      showToast("Please fill out all required fields.", "error");
       setLoading(false);
       return;
     }
 
     try {
       await createRoute(route);
-      alert("Route created successfully! 👍");
+      showToast("Route created successfully!", "success");
       setRoute(emptyRoute); // Reset the form after successful creation
       //setRoutePath([]); // Reset the map
       console.log("Route created successfully.");
     } catch (error) {
       console.error("Failed to save route:", error);
-      setError("Failed to create route. Please try again. 😢");
+      showToast("Failed to create route. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -138,7 +139,6 @@ const AddRoutePage: React.FC = () => {
             />
           </form>
         </div>
-        {error && <ErrorAlert errorMessage={error} />}
         {/* Buttons */}
         <div className="mt-8 pt-4 border-t-2 border-gray-200 flex justify-end space-x-4 h-16 items-center">
           <PrimaryButton

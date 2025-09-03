@@ -1,3 +1,5 @@
+// src/pages/admin/routeManagment/RoutesPage.tsx
+
 import React, { useEffect, useState } from "react";
 import type { Route } from "../../../types/route";
 import { getAllRoutes } from "../../../api/routeService";
@@ -5,13 +7,16 @@ import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import type { Column } from "../../../components/molecules/DataTable";
 import DataTable from "../../../components/molecules/DataTable";
+import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
+import { useToast } from "../../../contexts/ToastContext";
 
 const RoutesPage: React.FC = () => {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
   const [filteredRoutes, setFilteredRoutes] = useState<Route[]>([]);
+
+  const { showToast } = useToast();
 
   // Fetch all routes from the backend API when the component mounts.
   useEffect(() => {
@@ -21,9 +26,9 @@ const RoutesPage: React.FC = () => {
         setRoutes(data);
       } catch (e: unknown) {
         if (e instanceof Error) {
-          setError(e.message);
+          showToast(`Error fetching routes: ${e.message}`, "error");
         } else {
-          setError("An unknown error occurred while fetching routes");
+          showToast("An unknown error occurred while fetching routes", "error");
         }
       } finally {
         setLoading(false);
@@ -48,21 +53,11 @@ const RoutesPage: React.FC = () => {
     setFilteredRoutes(newFilteredRoutes);
   }, [routes, filters]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   const handleViewRoute = (routeId: number) => {
-    // You'll need to create a new page for this, similar to BusMoreInfoPage.tsx
     window.location.href = `/admin/routes/${routeId}`;
   };
 
   const handleAddRoute = (): void => {
-    // You'll need to create a new page for this, similar to RegisterNewBusPage.tsx
     window.location.href = "/admin/routes/addRoutes";
   };
 
@@ -115,7 +110,7 @@ const RoutesPage: React.FC = () => {
           <PrimaryButton onClick={handleAddRoute}>Add Route</PrimaryButton>
         </div>
       </div>
-      <DataTable data={filteredRoutes} columns={routeColumns} />
+      {loading ? <LoadingSpinner /> : <DataTable data={filteredRoutes} columns={routeColumns} />}
     </div>
   );
 };

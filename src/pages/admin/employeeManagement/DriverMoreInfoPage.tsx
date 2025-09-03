@@ -1,23 +1,24 @@
+// src/pages/admin/employeeManagement/DriverMoreInfoPage.tsx
+
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getRouteById, updateRoute, deleteRoute } from "../../../api/routeService";
-import type { Route } from "../../../types/route";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
 import type { Driver } from "../../../types/employee";
 import Checkbox from "../../../components/atoms/Checkbox";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { deleteDriver, getDriverById, updateDriver } from "../../../api/driverService";
+import { useToast } from "../../../contexts/ToastContext";
 
 const DriverMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [driver, setDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const driverBackup = useRef<Driver | null>(null);
   const [driverId, setDriverId] = useState<number | null>(null);
+
+  const { showToast } = useToast();
 
   useEffect(() => {
     console.log("ID:", id);
@@ -25,13 +26,12 @@ const DriverMoreInfoPage: React.FC = () => {
       const parsedId = Number(id);
       setDriverId(parsedId);
       if (isNaN(parsedId)) {
-        setError("Invalid Driver ID provided in the URL.");
+        showToast("Invalid Driver ID provided in the URL.", "error");
         setLoading(false);
         return;
       }
 
       setLoading(true);
-      setError(null);
       getDriverById(parsedId)
         .then((driverData) => {
           if (driverData) {
@@ -39,25 +39,25 @@ const DriverMoreInfoPage: React.FC = () => {
             driverBackup.current = driverData;
             //console.log("Driver data fetched successfully:", driverData);
           } else {
-            setError(`No driver found with ID: ${id}`);
+            showToast(`No driver found with ID: ${id}`, "error");
           }
         })
         .catch((err) => {
           console.error("Failed to fetch driver details:", err);
-          setError("Failed to fetch driver details. Please try again.");
+          showToast("Failed to fetch driver details. Please try again.", "error");
         })
         .finally(() => {
           setLoading(false);
         });
     } else {
-      setError("No driver ID provided in the URL.");
+      showToast("No driver ID provided in the URL.", "error");
       setLoading(false);
     }
   }, [id]);
 
   const handleSave = async () => {
     if (driver === null || driverId === null || isNaN(driverId)) {
-      alert("Error: No valid driver data or ID to save.");
+      showToast("Error: No valid driver data or ID to save.", "error");
       return;
     }
 
@@ -67,7 +67,7 @@ const DriverMoreInfoPage: React.FC = () => {
 
     if (comparison.isMatching) {
       setLoading(false);
-      alert("No changes detected. Driver details were not updated. 🤷");
+      showToast("No changes detected. Driver details were not updated.", "info");
       return;
     }
 
@@ -80,11 +80,12 @@ const DriverMoreInfoPage: React.FC = () => {
 
     try {
       await updateDriver(driverId, driver);
+      showToast("Driver details updated successfully.", "success");
       console.log("Driver details updated successfully.");
       driverBackup.current = driver;
     } catch (error) {
       console.error("Failed to save driver details:", error);
-      alert("Failed to save changes. Please try again. 😢");
+      showToast("Failed to save changes. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -98,14 +99,15 @@ const DriverMoreInfoPage: React.FC = () => {
     if (isConfirmed && driverId !== null && !isNaN(driverId)) {
       deleteDriver(driverId)
         .then(() => {
+          showToast("Driver deleted successfully!", "success");
           window.location.href = "/admin/employees";
         })
         .catch((error) => {
           console.error("Failed to delete driver:", error);
-          alert("Failed to delete driver. Please try again. 😢");
+          showToast("Failed to delete driver. Please try again.", "error");
         });
     } else if (isConfirmed && (driverId === null || isNaN(driverId))) {
-      alert("Invalid driver ID for deletion. 😢");
+      showToast("Invalid driver ID for deletion.", "error");
     } else {
       console.log("Driver deletion cancelled.");
     }
@@ -119,18 +121,10 @@ const DriverMoreInfoPage: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={error} />
-      </div>
-    );
-  }
-
   if (!driver) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={"No driver data found."} />
+        <div className="text-gray-600 text-lg">No driver data found.</div>
       </div>
     );
   }

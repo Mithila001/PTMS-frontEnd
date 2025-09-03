@@ -42,8 +42,10 @@ const AssignmentsPage: React.FC = () => {
   }, []); // Filter assignments based on search term
 
   useEffect(() => {
-    const newFilteredAssignments = assignments.filter((assignment) =>
-      assignment.date.toLowerCase().includes(filters.searchTerm.toLowerCase())
+    const newFilteredAssignments = assignments.filter(
+      (assignment) =>
+        assignment.date?.toString().toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
+        false
     );
     setFilteredAssignments(newFilteredAssignments);
   }, [assignments, filters]); // UI styles from the example
@@ -67,8 +69,8 @@ const AssignmentsPage: React.FC = () => {
     { header: "ID", key: "id" },
     {
       header: "Date",
-      key: "scheduledTrip",
-      render: (assignment) => assignment.date || "N/A",
+      key: "date",
+      render: (assignment) => (assignment.date ? assignment.date.toString() : "N/A"),
     },
     {
       header: "Bus",

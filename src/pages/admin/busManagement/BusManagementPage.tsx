@@ -1,3 +1,5 @@
+// ptms-frontEnd\src\pages\admin\busManagement\BusManagementPage.tsx
+
 import React, { useEffect, useState } from "react";
 import type { Bus } from "../../../types/bus";
 import { getBuses } from "../../../api/busService";
@@ -7,15 +9,16 @@ import type { Column } from "../../../components/molecules/DataTable";
 import DataTable from "../../../components/molecules/DataTable";
 import { useApplicationData } from "../../../contexts/ApplicationDataContext";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
+import { useToast } from "../../../contexts/ToastContext";
 
 const BusManagementPage: React.FC = () => {
   const [buses, setBuses] = useState<Bus[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
   const [filteredBuses, setFilteredBuses] = useState<Bus[]>([]);
 
   const { enums } = useApplicationData();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchBuses = async () => {
@@ -24,16 +27,16 @@ const BusManagementPage: React.FC = () => {
         setBuses(data);
       } catch (e: unknown) {
         if (e instanceof Error) {
-          setError(e.message);
+          showToast(`Error: ${e.message}`, "error");
         } else {
-          setError("An unknown error occurred");
+          showToast("An unknown error occurred", "error");
         }
       } finally {
         setLoading(false);
       }
     };
     fetchBuses();
-  }, []);
+  }, [showToast]);
 
   useEffect(() => {
     let newFilteredBuses = buses.filter((bus) => {
@@ -51,10 +54,6 @@ const BusManagementPage: React.FC = () => {
 
   if (loading) {
     return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
   }
 
   const handleViewBus = (busId: number) => {

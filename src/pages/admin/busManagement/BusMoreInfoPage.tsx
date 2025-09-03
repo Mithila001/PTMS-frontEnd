@@ -5,57 +5,58 @@ import { useParams } from "react-router-dom";
 import { deleteBus, getBusById, updateBus } from "../../../api/busService";
 import type { Bus } from "../../../types/bus";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
-import isEqual from "lodash.isequal";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
 import TextInput from "../../../components/atoms/TextInput";
 import Checkbox from "../../../components/atoms/Checkbox";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
-import Dropdown from "../../../components/atoms/Dropdown"; // <--- NEW IMPORT
-import { useApplicationData } from "../../../contexts/ApplicationDataContext"; // <--- NEW IMPORT
+import Dropdown from "../../../components/atoms/Dropdown";
+import { useApplicationData } from "../../../contexts/ApplicationDataContext";
+import { useToast } from "../../../contexts/ToastContext";
 
 const BusMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [bus, setBus] = useState<Bus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const busBackup = useRef<Bus | null>(null);
 
+  const { showToast } = useToast();
   // Use the context to get application data
   const { enums, loading: enumsLoading, error: enumsError } = useApplicationData();
 
   useEffect(() => {
     if (id) {
       setLoading(true);
-      setError(null);
       getBusById(id)
         .then((busData) => {
           if (busData) {
             setBus(busData);
             busBackup.current = busData;
           } else {
-            setError(`No bus found with ID: ${id}`);
+            showToast(`No bus found with ID: ${id}`, "error");
           }
         })
         .catch((err) => {
           console.error("Failed to fetch bus details:", err);
-          setError("Failed to fetch bus details. Please try again.");
+          showToast("Failed to fetch bus details. Please try again.", "error");
         })
         .finally(() => {
           setLoading(false);
         });
     } else {
-      setError("No bus ID provided in the URL.");
+      showToast("No bus ID provided in the URL.", "error");
       setLoading(false);
     }
-  }, [id]);
+  }, [id, showToast]);
 
   const handleSave = async () => {
     setLoading(true);
 
     if (bus === null) {
       setLoading(false);
-      alert("Error!!!! No bus data to save. Please ensure the bus details are loaded correctly.");
+      showToast(
+        "Error! No bus data to save. Please ensure the bus details are loaded correctly.",
+        "error"
+      );
       return;
     }
 
@@ -63,7 +64,7 @@ const BusMoreInfoPage: React.FC = () => {
 
     if (comparison.isMatching) {
       setLoading(false);
-      alert("No changes detected. Bus details were not updated. 🤷");
+      showToast("No changes detected. Bus details were not updated. 🤷", "info");
       return;
     }
 
@@ -76,11 +77,12 @@ const BusMoreInfoPage: React.FC = () => {
 
     try {
       await updateBus(bus.id.toString(), bus);
+      showToast("Bus details updated successfully!", "success");
       console.log("Bus details updated successfully.");
       busBackup.current = bus;
     } catch (error) {
       console.error("Failed to save bus details:", error);
-      alert("Failed to save changes. Please try again. 😢");
+      showToast("Failed to save changes. Please try again. 😢", "error");
     } finally {
       setLoading(false);
     }
@@ -94,11 +96,12 @@ const BusMoreInfoPage: React.FC = () => {
     if (isConfirmed) {
       deleteBus(id as string)
         .then(() => {
+          showToast("Bus deleted successfully!", "success");
           window.location.href = "/admin/buses";
         })
         .catch((error) => {
           console.error("Failed to delete bus:", error);
-          alert("Failed to delete bus. Please try again. 😢");
+          showToast("Failed to delete bus. Please try again. 😢", "error");
         });
     } else {
       console.log("Bus deletion cancelled.");
@@ -117,11 +120,11 @@ const BusMoreInfoPage: React.FC = () => {
   }
 
   // Combine error states
-  const pageError = error || enumsError;
+  const pageError = enumsError;
   if (pageError) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={pageError} />
+        <p className="text-red-500 font-bold">Error: {pageError}</p>
       </div>
     );
   }
@@ -129,7 +132,7 @@ const BusMoreInfoPage: React.FC = () => {
   if (!bus) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={"No bus data found."} />
+        <p className="text-gray-600 text-lg">No bus data found.</p>
       </div>
     );
   }
@@ -187,7 +190,7 @@ const BusMoreInfoPage: React.FC = () => {
               value={bus.fuelType}
               onChange={handleInputChange}
             />
-            {/* Service Type */} {/* <--- NEW DROPDOWN */}
+            {/* Service Type */}
             <Dropdown
               id="serviceType"
               label="Service Type"

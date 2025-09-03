@@ -3,21 +3,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
 import type { Conductor } from "../../../types/employee";
 import Checkbox from "../../../components/atoms/Checkbox";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { deleteConductor, getConductorById, updateConductor } from "../../../api/conductorService";
+import { useToast } from "../../../contexts/ToastContext";
 
 const ConductorMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [conductor, setConductor] = useState<Conductor | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const conductorBackup = useRef<Conductor | null>(null);
   const [conductorId, setConductorId] = useState<number | null>(null);
+
+  const { showToast } = useToast();
 
   useEffect(() => {
     console.log("ID:", id);
@@ -25,13 +26,12 @@ const ConductorMoreInfoPage: React.FC = () => {
       const parsedId = Number(id);
       setConductorId(parsedId);
       if (isNaN(parsedId)) {
-        setError("Invalid Conductor ID provided in the URL.");
+        showToast("Invalid Conductor ID provided in the URL.", "error");
         setLoading(false);
         return;
       }
 
       setLoading(true);
-      setError(null);
       getConductorById(parsedId)
         .then((conductorData) => {
           if (conductorData) {
@@ -39,25 +39,25 @@ const ConductorMoreInfoPage: React.FC = () => {
             conductorBackup.current = conductorData;
             //console.log("Conductor data fetched successfully:", conductorData);
           } else {
-            setError(`No conductor found with ID: ${id}`);
+            showToast(`No conductor found with ID: ${id}`, "error");
           }
         })
         .catch((err) => {
           console.error("Failed to fetch conductor details:", err);
-          setError("Failed to fetch conductor details. Please try again.");
+          showToast("Failed to fetch conductor details. Please try again.", "error");
         })
         .finally(() => {
           setLoading(false);
         });
     } else {
-      setError("No conductor ID provided in the URL.");
+      showToast("No conductor ID provided in the URL.", "error");
       setLoading(false);
     }
   }, [id]);
 
   const handleSave = async () => {
     if (conductor === null || conductorId === null || isNaN(conductorId)) {
-      alert("Error: No valid conductor data or ID to save.");
+      showToast("Error: No valid conductor data or ID to save.", "error");
       return;
     }
 
@@ -70,7 +70,7 @@ const ConductorMoreInfoPage: React.FC = () => {
 
     if (comparison.isMatching) {
       setLoading(false);
-      alert("No changes detected. Conductor details were not updated. 🤷");
+      showToast("No changes detected. Conductor details were not updated.", "info");
       return;
     }
 
@@ -83,11 +83,12 @@ const ConductorMoreInfoPage: React.FC = () => {
 
     try {
       await updateConductor(conductorId, conductor);
+      showToast("Conductor details updated successfully.", "success");
       console.log("Conductor details updated successfully.");
       conductorBackup.current = conductor;
     } catch (error) {
       console.error("Failed to save conductor details:", error);
-      alert("Failed to save changes. Please try again. 😢");
+      showToast("Failed to save changes. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -105,10 +106,10 @@ const ConductorMoreInfoPage: React.FC = () => {
         })
         .catch((error) => {
           console.error("Failed to delete conductor:", error);
-          alert("Failed to delete conductor. Please try again. 😢");
+          showToast("Failed to delete conductor. Please try again.", "error");
         });
     } else if (isConfirmed && (conductorId === null || isNaN(conductorId))) {
-      alert("Invalid conductor ID for deletion. 😢");
+      showToast("Invalid conductor ID for deletion.", "error");
     } else {
       console.log("Conductor deletion cancelled.");
     }
@@ -122,18 +123,10 @@ const ConductorMoreInfoPage: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={error} />
-      </div>
-    );
-  }
-
   if (!conductor) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={"No conductor data found."} />
+        <div className="text-gray-600 text-lg">No conductor data found.</div>
       </div>
     );
   }

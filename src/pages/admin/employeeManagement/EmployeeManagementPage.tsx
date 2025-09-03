@@ -1,31 +1,32 @@
+// src/pages/admin/employeeManagement/EmployeeManagementPage.tsx
+
 import React, { useState, useEffect, useRef } from "react";
 import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
-import EmployeeTable from "../../../components/molecules/EmployeeTable";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import type { Conductor, Driver } from "../../../types/employee";
 import type { Column } from "../../../components/molecules/DataTable";
 import DataTable from "../../../components/molecules/DataTable";
 import { getAllDrivers } from "../../../api/driverService";
 import { getAllConductors } from "../../../api/conductorService";
+import { useToast } from "../../../contexts/ToastContext";
 
 const EmployeeManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"drivers" | "conductors">("drivers");
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [conductors, setConductors] = useState<Conductor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [filteredDrivers, setFilteredDrivers] = useState<Driver[]>([]);
   const [filteredConductors, setFilteredConductors] = useState<Conductor[]>([]);
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
   const selectedTab = useRef<"Driver" | "Conductor">("Driver");
 
+  const { showToast } = useToast();
+
   // useEffect hook to fetch data when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      setError(null);
       try {
         const [driversData, conductorsData] = await Promise.all([
           getAllDrivers(),
@@ -35,9 +36,9 @@ const EmployeeManagementPage: React.FC = () => {
         setConductors(conductorsData);
       } catch (e: unknown) {
         if (e instanceof Error) {
-          setError(e.message);
+          showToast(`Error: ${e.message}`, "error");
         } else {
-          setError("An unknown error occurred while fetching employees");
+          showToast("An unknown error occurred while fetching employees", "error");
         }
       } finally {
         setLoading(false);
@@ -58,7 +59,6 @@ const EmployeeManagementPage: React.FC = () => {
 
   const handleViewDriver = (id: number) => {
     // Navigate to the details page
-
     window.location.href = `/admin/employeeManagement/driverInfo/${id}`;
   };
 
@@ -105,10 +105,6 @@ const EmployeeManagementPage: React.FC = () => {
 
   if (loading) {
     return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return <ErrorAlert errorMessage={error} />;
   }
 
   const driverColumns: Column<Driver>[] = [

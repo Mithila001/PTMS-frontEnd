@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { getRouteById, updateRoute, deleteRoute } from "../../../api/routeService";
 import type { Route } from "../../../types/route";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
 import TextInput from "../../../components/atoms/TextInput";
 import TextArea from "../../../components/atoms/TextArea";
@@ -17,7 +16,6 @@ const RouteMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [route, setRoute] = useState<Route | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const routeBackup = useRef<Route | null>(null);
   const [routeId, setRouteId] = useState<number | null>(null);
   const [routePath, setRoutePath] = useState<L.LatLngExpression[]>([]);
@@ -31,42 +29,41 @@ const RouteMoreInfoPage: React.FC = () => {
       const parsedId = Number(id);
       setRouteId(parsedId);
       if (isNaN(parsedId)) {
-        setError("Invalid route ID provided in the URL.");
+        showToast("Invalid route ID provided in the URL.", "error");
         setLoading(false);
         return;
       }
 
-      setError(null);
       getRouteById(parsedId)
         .then((routeData) => {
           if (routeData) {
             setRoute(routeData);
             routeBackup.current = routeData;
             if (routeData.routePath) {
-              const [parsedPath, _] = parseWKTLineString(routeData.routePath);
+              const [parsedPath] = parseWKTLineString(routeData.routePath);
               setRoutePath(parsedPath);
             }
             //console.log("Route data fetched successfully:", routeData);
           } else {
-            setError(`No route found with ID: ${id}`);
+            showToast(`No route found with ID: ${id}`, "error");
           }
         })
         .catch((err) => {
           console.error("Failed to fetch route details:", err);
-          setError("Failed to fetch route details. Please try again.");
+          showToast("Failed to fetch route details. Please try again.", "error");
         })
         .finally(() => {
           setLoading(false);
         });
     } else {
-      setError("No route ID provided in the URL.");
+      showToast("No route ID provided in the URL.", "error");
       setLoading(false);
     }
   }, [id]);
 
   const handleSave = async () => {
     if (route === null || routeId === null || isNaN(routeId)) {
-      alert("Error: No valid route data or ID to save.");
+      showToast("Error: No valid route data or ID to save.", "error");
       return;
     }
 
@@ -86,7 +83,7 @@ const RouteMoreInfoPage: React.FC = () => {
 
     if (comparison.isMatching) {
       setLoading(false);
-      alert("No changes detected. Route details were not updated. 🤷");
+      showToast("No changes detected. Route details were not updated.", "info");
       return;
     }
 
@@ -99,11 +96,12 @@ const RouteMoreInfoPage: React.FC = () => {
 
     try {
       await updateRoute(routeId, route);
+      showToast("Route details updated successfully.", "success");
       //console.log("Route details updated successfully.");
       routeBackup.current = route;
     } catch (error) {
       console.error("Failed to save route details:", error);
-      alert("Failed to save changes. Please try again. 😢");
+      showToast("Failed to save changes. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -121,10 +119,10 @@ const RouteMoreInfoPage: React.FC = () => {
         })
         .catch((error) => {
           console.error("Failed to delete route:", error);
-          alert("Failed to delete route. Please try again. 😢");
+          showToast("Failed to delete route. Please try again.", "error");
         });
     } else if (isConfirmed && (routeId === null || isNaN(routeId))) {
-      alert("Invalid route ID for deletion. 😢");
+      showToast("Invalid route ID for deletion.", "error");
     } else {
       //console.log("Route deletion cancelled.");
     }
@@ -141,7 +139,7 @@ const RouteMoreInfoPage: React.FC = () => {
   if (!route) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={"No route data found."} />
+        <div className="text-gray-600 text-lg">No route data found.</div>
       </div>
     );
   }
@@ -175,10 +173,10 @@ const RouteMoreInfoPage: React.FC = () => {
 
     if (isValid) {
       setRoutePath(parsedPath);
-      setError(null);
+      //setError(null); // No longer needed
       //setIsWktValid(true);
     } else {
-      showToast("Invalid WKT format. Please ensure it is a valid LINESTRING. 😥", "error");
+      showToast("Invalid WKT format. Please ensure it is a valid LINESTRING.", "error");
       console.log("-----------------Invalid WKT format:", value);
       //setIsWktValid(false);
     }

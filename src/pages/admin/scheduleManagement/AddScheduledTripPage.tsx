@@ -4,11 +4,11 @@ import React, { useState } from "react";
 import { createScheduledTrip } from "../../../api/scheduledTripService";
 import type { ScheduledTrip } from "../../../types/assignment";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import type { Route } from "../../../types/route";
+import { useToast } from "../../../contexts/ToastContext";
 
 // Define an empty ScheduledTrip object without the 'id' and 'route' for the form state
 const emptyScheduledTrip: Omit<ScheduledTrip, "id"> = {
@@ -21,21 +21,20 @@ const emptyScheduledTrip: Omit<ScheduledTrip, "id"> = {
 const AddScheduledTripPage: React.FC = () => {
   const [scheduledTrip, setScheduledTrip] = useState<Omit<ScheduledTrip, "id">>(emptyScheduledTrip);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const handleSave = async () => {
     setLoading(true);
-    setError(null);
     try {
       await createScheduledTrip(scheduledTrip);
       console.log("Scheduled trip created successfully.");
-      alert("Scheduled trip created successfully! 👍");
+      showToast("Scheduled trip created successfully! 👍", "success");
       setScheduledTrip(emptyScheduledTrip); // Reset form after successful submission
       navigate("/admin/scheduledtrips"); // Redirect to the list page
     } catch (error) {
       console.error("Failed to save scheduled trip details:", error);
-      setError("Failed to create scheduled trip. Please try again. 😢");
+      showToast("Failed to create scheduled trip. Please try again. 😢", "error");
     } finally {
       setLoading(false);
     }
@@ -63,8 +62,6 @@ const AddScheduledTripPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">
           Add New Scheduled Trip
         </h1>
-
-        {error && <ErrorAlert errorMessage={error} />}
 
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">

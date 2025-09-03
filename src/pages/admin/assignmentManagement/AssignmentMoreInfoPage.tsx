@@ -1,7 +1,6 @@
 // src/pages/admin/assignmentManagement/AssignmentMoreInfoPage.tsx
 
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import {
   getAssignmentById,
   updateAssignment,
@@ -9,65 +8,65 @@ import {
 } from "../../../api/assignmentService";
 import type { Assignment } from "../../../types/assignment";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useToast } from "../../../contexts/ToastContext";
 
 const AssignmentMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const assignmentBackup = useRef<Assignment | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (id) {
       setLoading(true);
-      setError(null);
       getAssignmentById(parseInt(id))
         .then((assignmentData) => {
           if (assignmentData) {
             setAssignment(assignmentData);
             assignmentBackup.current = assignmentData;
           } else {
-            setError(`No assignment found with ID: ${id}`);
+            showToast(`No assignment found with ID: ${id}`, "error");
           }
         })
         .catch((err) => {
           console.error("Failed to fetch assignment details:", err);
-          setError("Failed to fetch assignment details. Please try again.");
+          showToast("Failed to fetch assignment details. Please try again.", "error");
         })
         .finally(() => {
           setLoading(false);
         });
     } else {
-      setError("No assignment ID provided in the URL.");
+      showToast("No assignment ID provided in the URL.", "error");
       setLoading(false);
     }
-  }, [id]);
+  }, [id, showToast]);
 
   const handleSave = async () => {
     setLoading(true);
+
+    if (assignment === null) {
+      setLoading(false);
+      showToast(
+        "Error! No assignment data to save. Please ensure the assignment details are loaded correctly.",
+        "error"
+      );
+      return;
+    }
 
     const comparison = compareTwoObjects(
       assignment as Assignment,
       assignmentBackup.current as Assignment
     );
 
-    if (assignment === null) {
-      setLoading(false);
-      alert(
-        "Error! No assignment data to save. Please ensure the assignment details are loaded correctly."
-      );
-      return;
-    }
-
     if (comparison.isMatching) {
       setLoading(false);
-      alert("No changes detected. Assignment details were not updated. 🤷");
+      showToast("No changes detected. Assignment details were not updated. 🤷", "info");
       return;
     }
 
@@ -81,10 +80,11 @@ const AssignmentMoreInfoPage: React.FC = () => {
     try {
       await updateAssignment(assignment.id, assignment);
       console.log("Assignment details updated successfully.");
+      showToast("Assignment details updated successfully!", "success");
       assignmentBackup.current = assignment;
     } catch (error) {
       console.error("Failed to save assignment details:", error);
-      alert("Failed to save changes. Please try again. 😢");
+      showToast("Failed to save changes. Please try again. 😢", "error");
     } finally {
       setLoading(false);
     }
@@ -98,11 +98,12 @@ const AssignmentMoreInfoPage: React.FC = () => {
     if (isConfirmed && assignment) {
       deleteAssignment(assignment.id)
         .then(() => {
+          showToast("Assignment deleted successfully!", "success");
           navigate("/admin/assignments");
         })
         .catch((error) => {
           console.error("Failed to delete assignment:", error);
-          alert("Failed to delete assignment. Please try again. 😢");
+          showToast("Failed to delete assignment. Please try again. 😢", "error");
         });
     } else {
       console.log("Assignment deletion cancelled.");
@@ -128,18 +129,10 @@ const AssignmentMoreInfoPage: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={error} />
-      </div>
-    );
-  }
-
   if (!assignment) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={"No assignment data found."} />
+        <p className="text-gray-600 text-lg">No assignment data found.</p>
       </div>
     );
   }
@@ -187,7 +180,7 @@ const AssignmentMoreInfoPage: React.FC = () => {
             <TextInput
               id="date"
               label="Date"
-              value={assignment.date}
+              value={assignment.date ? assignment.date.toString() : ""}
               onChange={handleTextInputChange}
             />
             {/* Status */}

@@ -1,12 +1,14 @@
+// src/pages/admin/employeeManagement/AddEmployeePage.tsx
+
 import React, { useState } from "react";
 import type { Driver, Conductor, Employee, EmployeeType } from "../../../types/employee";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import Checkbox from "../../../components/atoms/Checkbox";
 import { createConductor } from "../../../api/conductorService";
 import { createDriver } from "../../../api/driverService";
+import { useToast } from "../../../contexts/ToastContext";
 
 // Base empty employee object
 const emptyEmployee: Omit<Employee, "id"> = {
@@ -42,7 +44,8 @@ const AddEmployeePage: React.FC = () => {
   const [employeeType, setEmployeeType] = useState<EmployeeType>("driver");
   const [employee, setEmployee] = useState<Omit<Driver, "id"> | Omit<Conductor, "id">>(emptyDriver);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const { showToast } = useToast();
 
   // Reset the form state when the employee type changes
   const handleTypeChange = (type: EmployeeType) => {
@@ -56,7 +59,6 @@ const AddEmployeePage: React.FC = () => {
 
   const handleSave = async () => {
     setLoading(true);
-    setError(null);
 
     // Simple validation for required fields
     const requiredFields = [
@@ -69,7 +71,7 @@ const AddEmployeePage: React.FC = () => {
     ];
     for (const field of requiredFields) {
       if (!employee[field as keyof typeof employee]) {
-        setError(`Please fill out all required fields. Missing: ${field}`);
+        showToast(`Please fill out all required fields. Missing: ${field}`, "error");
         setLoading(false);
         return;
       }
@@ -78,17 +80,17 @@ const AddEmployeePage: React.FC = () => {
     try {
       if (employeeType === "driver") {
         await createDriver(employee as Omit<Driver, "id">);
-        alert("Driver created successfully! 👍");
+        showToast("Driver created successfully!", "success");
       } else if (employeeType === "conductor") {
         await createConductor(employee as Omit<Conductor, "id">);
-        alert("Conductor created successfully! 👍");
+        showToast("Conductor created successfully!", "success");
       }
       setEmployeeType("driver");
       setEmployee(emptyDriver); // Reset form after successful submission
       console.log("Employee created successfully.");
     } catch (error) {
       console.error("Failed to save employee details:", error);
-      setError("Failed to create employee. Please try again. 😢");
+      showToast("Failed to create employee. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -299,7 +301,6 @@ const AddEmployeePage: React.FC = () => {
             </div>
           </form>
         </div>
-        {error && <ErrorAlert errorMessage={error} />}
         <div className="mt-8 pt-4 border-t-2 border-gray-200 flex justify-end space-x-4 h-16 items-center">
           <PrimaryButton
             onClick={handleSave}

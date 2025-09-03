@@ -9,64 +9,64 @@ import {
 } from "../../../api/scheduledTripService";
 import type { ScheduledTrip } from "../../../types/assignment";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
+import { useToast } from "../../../contexts/ToastContext";
 
 const ScheduledTripsMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [scheduledTrip, setScheduledTrip] = useState<ScheduledTrip | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const scheduledTripBackup = useRef<ScheduledTrip | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (id) {
       setLoading(true);
-      setError(null);
       getScheduledTripById(parseInt(id))
         .then((tripData) => {
           if (tripData) {
             setScheduledTrip(tripData);
             scheduledTripBackup.current = tripData;
           } else {
-            setError(`No scheduled trip found with ID: ${id}`);
+            showToast(`No scheduled trip found with ID: ${id}`, "error");
           }
         })
         .catch((err) => {
           console.error("Failed to fetch scheduled trip details:", err);
-          setError("Failed to fetch scheduled trip details. Please try again.");
+          showToast("Failed to fetch scheduled trip details. Please try again.", "error");
         })
         .finally(() => {
           setLoading(false);
         });
     } else {
-      setError("No scheduled trip ID provided in the URL.");
+      showToast("No scheduled trip ID provided in the URL.", "error");
       setLoading(false);
     }
-  }, [id]);
+  }, [id, showToast]);
 
   const handleSave = async () => {
     setLoading(true);
+
+    if (scheduledTrip === null) {
+      setLoading(false);
+      showToast(
+        "Error! No scheduled trip data to save. Please ensure the trip details are loaded correctly.",
+        "error"
+      );
+      return;
+    }
 
     const comparison = compareTwoObjects(
       scheduledTrip as ScheduledTrip,
       scheduledTripBackup.current as ScheduledTrip
     );
 
-    if (scheduledTrip === null) {
-      setLoading(false);
-      alert(
-        "Error! No scheduled trip data to save. Please ensure the trip details are loaded correctly."
-      );
-      return;
-    }
-
     if (comparison.isMatching) {
       setLoading(false);
-      alert("No changes detected. Scheduled trip details were not updated. 🤷");
+      showToast("No changes detected. Scheduled trip details were not updated. 🤷", "info");
       return;
     }
 
@@ -80,10 +80,11 @@ const ScheduledTripsMoreInfoPage: React.FC = () => {
     try {
       await updateScheduledTrip(scheduledTrip.id, scheduledTrip);
       console.log("Scheduled trip details updated successfully.");
+      showToast("Scheduled trip details updated successfully!", "success");
       scheduledTripBackup.current = scheduledTrip;
     } catch (error) {
       console.error("Failed to save scheduled trip details:", error);
-      alert("Failed to save changes. Please try again. 😢");
+      showToast("Failed to save changes. Please try again. 😢", "error");
     } finally {
       setLoading(false);
     }
@@ -97,11 +98,12 @@ const ScheduledTripsMoreInfoPage: React.FC = () => {
     if (isConfirmed && scheduledTrip) {
       deleteScheduledTrip(scheduledTrip.id)
         .then(() => {
+          showToast("Scheduled trip deleted successfully!", "success");
           navigate("/admin/scheduledtrips");
         })
         .catch((error) => {
           console.error("Failed to delete scheduled trip:", error);
-          alert("Failed to delete scheduled trip. Please try again. 😢");
+          showToast("Failed to delete scheduled trip. Please try again. 😢", "error");
         });
     } else {
       console.log("Scheduled trip deletion cancelled.");
@@ -127,18 +129,10 @@ const ScheduledTripsMoreInfoPage: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={error} />
-      </div>
-    );
-  }
-
   if (!scheduledTrip) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={"No scheduled trip data found."} />
+        <p className="text-gray-600 text-lg">No scheduled trip data found.</p>
       </div>
     );
   }
