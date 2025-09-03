@@ -1,89 +1,92 @@
+// src/pages/admin/employeeManagement/ConductorMoreInfoPage.tsx
+
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getRouteById, updateRoute, deleteRoute } from "../../../api/routeService";
-import type { Route } from "../../../types/route";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
-import type { Driver } from "../../../types/employee";
+import type { Conductor } from "../../../types/employee";
 import Checkbox from "../../../components/atoms/Checkbox";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
-import { deleteDriver, getDriverById, updateDriver } from "../../../api/driverService";
+import { deleteConductor, getConductorById, updateConductor } from "../../../api/conductorService";
 
-const DriverMoreInfoPage: React.FC = () => {
+const ConductorMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [driver, setDriver] = useState<Driver | null>(null);
+  const [conductor, setConductor] = useState<Conductor | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const driverBackup = useRef<Driver | null>(null);
-  const [driverId, setDriverId] = useState<number | null>(null);
+  const conductorBackup = useRef<Conductor | null>(null);
+  const [conductorId, setConductorId] = useState<number | null>(null);
 
   useEffect(() => {
     console.log("ID:", id);
     if (id) {
       const parsedId = Number(id);
-      setDriverId(parsedId);
+      setConductorId(parsedId);
       if (isNaN(parsedId)) {
-        setError("Invalid Driver ID provided in the URL.");
+        setError("Invalid Conductor ID provided in the URL.");
         setLoading(false);
         return;
       }
 
       setLoading(true);
       setError(null);
-      getDriverById(parsedId)
-        .then((driverData) => {
-          if (driverData) {
-            setDriver(driverData);
-            driverBackup.current = driverData;
-            //console.log("Driver data fetched successfully:", driverData);
+      getConductorById(parsedId)
+        .then((conductorData) => {
+          if (conductorData) {
+            setConductor(conductorData);
+            conductorBackup.current = conductorData;
+            //console.log("Conductor data fetched successfully:", conductorData);
           } else {
-            setError(`No driver found with ID: ${id}`);
+            setError(`No conductor found with ID: ${id}`);
           }
         })
         .catch((err) => {
-          console.error("Failed to fetch driver details:", err);
-          setError("Failed to fetch driver details. Please try again.");
+          console.error("Failed to fetch conductor details:", err);
+          setError("Failed to fetch conductor details. Please try again.");
         })
         .finally(() => {
           setLoading(false);
         });
     } else {
-      setError("No driver ID provided in the URL.");
+      setError("No conductor ID provided in the URL.");
       setLoading(false);
     }
   }, [id]);
 
   const handleSave = async () => {
-    if (driver === null || driverId === null || isNaN(driverId)) {
-      alert("Error: No valid driver data or ID to save.");
+    if (conductor === null || conductorId === null || isNaN(conductorId)) {
+      alert("Error: No valid conductor data or ID to save.");
       return;
     }
 
     setLoading(true);
 
-    const comparison = compareTwoObjects(driver as Driver, driverBackup.current as Driver);
+    const comparison = compareTwoObjects(
+      conductor as Conductor,
+      conductorBackup.current as Conductor
+    );
 
     if (comparison.isMatching) {
       setLoading(false);
-      alert("No changes detected. Driver details were not updated. 🤷");
+      alert("No changes detected. Conductor details were not updated. 🤷");
       return;
     }
 
     if (comparison.changedLogs.length > 0) {
-      console.log("Driver details have been changed. The following updates will be saved:");
+      console.log("Conductor details have been changed. The following updates will be saved:");
       comparison.changedLogs.forEach((log) => {
         console.log(`- Property '${log.key}' changed from '${log.oldValue}' to '${log.newValue}'.`);
       });
     }
 
     try {
-      await updateDriver(driverId, driver);
-      console.log("Driver details updated successfully.");
-      driverBackup.current = driver;
+      await updateConductor(conductorId, conductor);
+      console.log("Conductor details updated successfully.");
+      conductorBackup.current = conductor;
     } catch (error) {
-      console.error("Failed to save driver details:", error);
+      console.error("Failed to save conductor details:", error);
       alert("Failed to save changes. Please try again. 😢");
     } finally {
       setLoading(false);
@@ -92,22 +95,22 @@ const DriverMoreInfoPage: React.FC = () => {
 
   const handleDelete = () => {
     const isConfirmed = window.confirm(
-      "Are you sure you want to delete this route? This action cannot be undone."
+      "Are you sure you want to delete this conductor? This action cannot be undone."
     );
 
-    if (isConfirmed && driverId !== null && !isNaN(driverId)) {
-      deleteDriver(driverId)
+    if (isConfirmed && conductorId !== null && !isNaN(conductorId)) {
+      deleteConductor(conductorId)
         .then(() => {
           window.location.href = "/admin/employees";
         })
         .catch((error) => {
-          console.error("Failed to delete driver:", error);
-          alert("Failed to delete driver. Please try again. 😢");
+          console.error("Failed to delete conductor:", error);
+          alert("Failed to delete conductor. Please try again. 😢");
         });
-    } else if (isConfirmed && (driverId === null || isNaN(driverId))) {
-      alert("Invalid driver ID for deletion. 😢");
+    } else if (isConfirmed && (conductorId === null || isNaN(conductorId))) {
+      alert("Invalid conductor ID for deletion. 😢");
     } else {
-      console.log("Driver deletion cancelled.");
+      console.log("Conductor deletion cancelled.");
     }
   };
 
@@ -127,10 +130,10 @@ const DriverMoreInfoPage: React.FC = () => {
     );
   }
 
-  if (!driver) {
+  if (!conductor) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <ErrorAlert errorMessage={"No driver data found."} />
+        <ErrorAlert errorMessage={"No conductor data found."} />
       </div>
     );
   }
@@ -138,11 +141,11 @@ const DriverMoreInfoPage: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value, type, checked } = e.target;
 
-    setDriver((prevDriver) => {
-      if (!prevDriver) return null;
+    setConductor((prevConductor) => {
+      if (!prevConductor) return null;
 
       return {
-        ...prevDriver,
+        ...prevConductor,
         [id]: type === "checkbox" ? checked : value,
       };
     });
@@ -153,7 +156,7 @@ const DriverMoreInfoPage: React.FC = () => {
       {/* Left Column: Form and Buttons */}
       <div className="flex flex-col flex-grow bg-white rounded-lg shadow-xl p-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">
-          Driver Details: {`${driver.firstName} ${driver.lastName}`}
+          Conductor Details: {`${conductor.firstName} ${conductor.lastName}`}
         </h1>
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -161,21 +164,21 @@ const DriverMoreInfoPage: React.FC = () => {
             <TextInput
               id="firstName"
               label="First Name"
-              value={driver.firstName}
+              value={conductor.firstName}
               onChange={handleInputChange}
             />
             {/* Last Name */}
             <TextInput
               id="lastName"
               label="Last Name"
-              value={driver.lastName}
+              value={conductor.lastName}
               onChange={handleInputChange}
             />
             {/* NIC Number */}
             <TextInput
               id="nicNumber"
               label="NIC Number"
-              value={driver.nicNumber}
+              value={conductor.nicNumber}
               onChange={handleInputChange}
             />
             {/* Date of Birth */}
@@ -183,7 +186,7 @@ const DriverMoreInfoPage: React.FC = () => {
               id="dateOfBirth"
               label="Date of Birth"
               type="date"
-              value={driver.dateOfBirth}
+              value={conductor.dateOfBirth}
               onChange={handleInputChange}
             />
             {/* Contact Number */}
@@ -191,7 +194,7 @@ const DriverMoreInfoPage: React.FC = () => {
               id="contactNumber"
               label="Contact Number"
               type="tel"
-              value={driver.contactNumber}
+              value={conductor.contactNumber}
               onChange={handleInputChange}
             />
             {/* Email */}
@@ -199,7 +202,7 @@ const DriverMoreInfoPage: React.FC = () => {
               id="email"
               label="Email"
               type="email"
-              value={driver.email}
+              value={conductor.email}
               onChange={handleInputChange}
             />
             {/* Address - full width field */}
@@ -207,7 +210,7 @@ const DriverMoreInfoPage: React.FC = () => {
               <TextInput
                 id="address"
                 label="Address"
-                value={driver.address}
+                value={conductor.address}
                 onChange={handleInputChange}
               />
             </div>
@@ -216,14 +219,14 @@ const DriverMoreInfoPage: React.FC = () => {
               id="dateJoined"
               label="Date Joined"
               type="date"
-              value={driver.dateJoined}
+              value={conductor.dateJoined}
               onChange={handleInputChange}
             />
-            {/* Driving License Number */}
+            {/* Conductor License Number */}
             <TextInput
-              id="drivingLicenseNumber"
-              label="Driving License Number"
-              value={driver.drivingLicenseNumber}
+              id="conductorLicenseNumber"
+              label="Conductor License Number"
+              value={conductor.conductorLicenseNumber}
               onChange={handleInputChange}
             />
             {/* License Expiration Date */}
@@ -231,29 +234,7 @@ const DriverMoreInfoPage: React.FC = () => {
               id="licenseExpirationDate"
               label="License Expiration Date"
               type="date"
-              value={driver.licenseExpirationDate}
-              onChange={handleInputChange}
-            />
-            {/* License Class */}
-            <TextInput
-              id="licenseClass"
-              label="License Class"
-              value={driver.licenseClass}
-              onChange={handleInputChange}
-            />
-            {/* NTC License Number */}
-            <TextInput
-              id="ntcLicenseNumber"
-              label="NTC License Number"
-              value={driver.ntcLicenseNumber}
-              onChange={handleInputChange}
-            />
-            {/* NTC License Expiration Date */}
-            <TextInput
-              id="ntcLicenseExpirationDate"
-              label="NTC License Expiration Date"
-              type="date"
-              value={driver.ntcLicenseExpirationDate}
+              value={conductor.licenseExpirationDate}
               onChange={handleInputChange}
             />
             {/* Is Current Employee & Available */}
@@ -261,13 +242,13 @@ const DriverMoreInfoPage: React.FC = () => {
               <Checkbox
                 id="isCurrentEmployee"
                 label="Is Current Employee"
-                checked={driver.isCurrentEmployee}
+                checked={conductor.isCurrentEmployee}
                 onChange={handleInputChange}
               />
               <Checkbox
                 id="available"
                 label="Is Available"
-                checked={driver.available}
+                checked={conductor.available}
                 onChange={handleInputChange}
               />
             </div>
@@ -298,4 +279,4 @@ const DriverMoreInfoPage: React.FC = () => {
   );
 };
 
-export default DriverMoreInfoPage;
+export default ConductorMoreInfoPage;

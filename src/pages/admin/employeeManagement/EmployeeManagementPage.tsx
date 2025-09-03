@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import EmployeeTable from "../../../components/molecules/EmployeeTable";
@@ -19,6 +19,7 @@ const EmployeeManagementPage: React.FC = () => {
   const [filteredDrivers, setFilteredDrivers] = useState<Driver[]>([]);
   const [filteredConductors, setFilteredConductors] = useState<Conductor[]>([]);
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
+  const selectedTab = useRef<"Driver" | "Conductor">("Driver");
 
   // useEffect hook to fetch data when the component mounts
   useEffect(() => {
@@ -48,6 +49,11 @@ const EmployeeManagementPage: React.FC = () => {
   const handleAddEmployee = () => {
     // Navigate to the Add Employee page
     window.location.href = "/admin/employeeManagement/addEmployee";
+  };
+
+  const handleViewConductor = (id: number) => {
+    // Navigate to the details page
+    window.location.href = `/admin/employeeManagement/conductorInfo/${id}`;
   };
 
   const handleViewDriver = (id: number) => {
@@ -141,14 +147,14 @@ const EmployeeManagementPage: React.FC = () => {
     {
       header: "Current Employee",
       key: "isCurrentEmployee",
-      render: (driver) => (driver.isCurrentEmployee ? "Yes" : "No"),
+      render: (conductor) => (conductor.isCurrentEmployee ? "Yes" : "No"),
     },
     {
       header: "Actions",
       key: "actions",
-      render: (driver) => (
+      render: (conductor) => (
         <button
-          onClick={() => handleViewDriver(driver.id)}
+          onClick={() => handleViewConductor(conductor.id)}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-6 rounded-full text-xs"
         >
           View
@@ -197,9 +203,17 @@ const EmployeeManagementPage: React.FC = () => {
 
       {/* Tab Content */}
       <div className={contentContainerStyles}>
-        {activeTab === "drivers" && <DataTable data={filteredDrivers} columns={driverColumns} />}
+        {activeTab === "drivers" && (
+          <>
+            <DataTable data={filteredDrivers} columns={driverColumns} />
+            {((selectedTab.current = "Driver"), null)}
+          </>
+        )}
         {activeTab === "conductors" && (
-          <DataTable data={filteredConductors} columns={conductorColumns} />
+          <>
+            <DataTable data={filteredConductors} columns={conductorColumns} />
+            {((selectedTab.current = "Conductor"), null)}
+          </>
         )}
       </div>
     </div>

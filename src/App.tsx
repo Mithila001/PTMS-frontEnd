@@ -23,6 +23,7 @@ import AssignmentMoreInfoPage from "./pages/admin/assignmentManagement/Assignmen
 import ScheduledTripsMoreInfoPage from "./pages/admin/scheduleManagement/ScheduledTripsMoreInfoPage";
 import AddScheduledTripPage from "./pages/admin/scheduleManagement/AddScheduledTripPage";
 import AddAssignmentPage from "./pages/admin/assignmentManagement/AddAssignmentPage";
+import ConductorMoreInfoPage from "./pages/admin/employeeManagement/ConductorMoreInfoPage";
 
 function App() {
   const { loading, isLoggedIn } = useAuth(); // Also get isLoggedIn state
@@ -53,6 +54,10 @@ function App() {
               <Route
                 path="/admin/employeeManagement/driverInfo/:id"
                 element={<DriverMoreInfoPage />}
+              />
+              <Route
+                path="/admin/employeeManagement/conductorInfo/:id"
+                element={<ConductorMoreInfoPage />}
               />
               <Route path="/admin/employeeManagement/addEmployee" element={<AddEmployeePage />} />
               <Route path="/admin/assignments/moreInfo/:id" element={<AssignmentMoreInfoPage />} />

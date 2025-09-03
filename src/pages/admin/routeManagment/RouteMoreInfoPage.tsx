@@ -138,10 +138,6 @@ const RouteMoreInfoPage: React.FC = () => {
     );
   }
 
-  if (error) {
-    showToast("Invalid WKT format. Please ensure it is a valid LINESTRING. 😥", "error");
-  }
-
   if (!route) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
