@@ -127,23 +127,21 @@ export const deleteScheduledTrip = async (id: number): Promise<boolean> => {
   }
 };
 
-// Add this new function to ptms-frontEnd\src\api\scheduledTripService.ts
-
 /**
  * Searches for scheduled trips based on optional criteria.
  * This function calls the GET /api/scheduled-trips/search-trips endpoint.
- * @param routeNumber The route number to search for (optional).
+ * @param scheduledTripId The ID of the scheduled trip to search for (optional).
  * @param direction The trip direction to search for ("UP" or "DOWN") (optional).
  * @returns A promise that resolves to an array of matching ScheduledTrip objects.
  */
 export const searchScheduledTrips = async (
-  routeNumber?: string,
+  scheduledTripId?: string,
   direction?: TripDirection
 ): Promise<ScheduledTrip[]> => {
   try {
     const params = new URLSearchParams();
-    if (routeNumber) {
-      params.append("routeNumber", routeNumber);
+    if (scheduledTripId) {
+      params.append("scheduledTripId", scheduledTripId);
     }
     if (direction) {
       params.append("direction", direction);

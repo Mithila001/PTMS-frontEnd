@@ -110,3 +110,30 @@ export const deleteRoute = async (id: number): Promise<void> => {
     throw error;
   }
 };
+
+// Fetches routes based on search criteria.
+// All parameters are optional, allowing for flexible search queries.
+export const searchRoutes = async (
+  routeNumber?: string,
+  origin?: string,
+  destination?: string
+): Promise<Route[]> => {
+  try {
+    const params = new URLSearchParams();
+    if (routeNumber) params.append("routeNumber", routeNumber);
+    if (origin) params.append("origin", origin);
+    if (destination) params.append("destination", destination);
+
+    const url = `${ROUTES_API_URL}/search?${params.toString()}`;
+
+    const response = await fetch(url, { credentials: "include" });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data: Route[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to search routes:", error);
+    throw error;
+  }
+};

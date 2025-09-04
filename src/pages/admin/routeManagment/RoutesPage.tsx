@@ -106,6 +106,9 @@ const RoutesPage: React.FC = () => {
             onFilterChange={setFilters}
             filterOptions={[]} // No dropdown filter for now
             filterLabel="Filter By"
+            showSearchResults={false}
+            showDropdownFilter={false}
+            searchInputPlaceholder="By Route Number"
           />
           <PrimaryButton onClick={handleAddRoute}>Add Route</PrimaryButton>
         </div>

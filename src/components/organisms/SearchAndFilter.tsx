@@ -8,12 +8,18 @@ interface SearchAndFilterProps {
   onFilterChange: (filters: { searchTerm: string; selectedFilter: string }) => void;
   filterOptions: string[]; // The list of options for the dropdown filter.
   filterLabel: string; // The label for the dropdown filter.
+  showSearchResults?: boolean; // Optional prop to control search bar dropdown visibility
+  showDropdownFilter?: boolean; // control filter dropdown visibility
+  searchInputPlaceholder?: string; // Placeholder text for the search input
 }
 
 const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   onFilterChange,
   filterOptions,
   filterLabel,
+  showSearchResults = true,
+  showDropdownFilter = true,
+  searchInputPlaceholder = "Search...",
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("");
@@ -36,21 +42,25 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           <SearchBar
             searchTerm={searchTerm}
             onSearchChange={(value) => handleChanges(value, selectedFilter)}
-            placeholder="Search by registration number..."
-            searchResults={searchResults} // Pass an empty array or actual search results if available.
+            placeholder={searchInputPlaceholder}
+            searchResults={searchResults}
             onResultClick={(result) => {
               handleChanges(result, selectedFilter);
             }}
+            showDropdown={showSearchResults}
           />
         </div>
-        <div className="w-full">
-          <DropdownFilter
-            options={filterOptions}
-            selectedValue={selectedFilter}
-            onValueChange={(value) => handleChanges(searchTerm, value)}
-            label={filterLabel}
-          />
-        </div>
+        {/* Conditionally render the DropdownFilter */}
+        {showDropdownFilter && (
+          <div className="w-full">
+            <DropdownFilter
+              options={filterOptions}
+              selectedValue={selectedFilter}
+              onValueChange={(value) => handleChanges(searchTerm, value)}
+              label={filterLabel}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

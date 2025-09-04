@@ -4,43 +4,43 @@ import React, { useState, useEffect } from "react";
 import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import ErrorAlert from "../../../components/atoms/ErrorAlert";
 import DataTable from "../../../components/molecules/DataTable";
 import type { Column } from "../../../components/molecules/DataTable";
 import type { Assignment } from "../../../types/assignment";
 import { getAllAssignments } from "../../../api/assignmentService";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../../../contexts/ToastContext";
 
 const AssignmentsPage: React.FC = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [filteredAssignments, setFilteredAssignments] = useState<Assignment[]>([]);
-  const [filters, setFilters] = useState({ searchTerm: "" }); // Fetches data when the component mounts
-
+  const [filters, setFilters] = useState({ searchTerm: "" });
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
+  // Fetches data when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      setError(null);
       try {
         const assignmentsData = await getAllAssignments();
         console.log("Fetched assignments:", assignmentsData);
         setAssignments(assignmentsData);
       } catch (e: unknown) {
         if (e instanceof Error) {
-          setError(e.message);
+          showToast(e.message, "error");
         } else {
-          setError("An unknown error occurred while fetching data.");
+          showToast("An unknown error occurred while fetching data.", "error");
         }
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []); // Filter assignments based on search term
+  }, [showToast]);
 
+  // Filter assignments based on search term
   useEffect(() => {
     const newFilteredAssignments = assignments.filter(
       (assignment) =>
@@ -48,8 +48,9 @@ const AssignmentsPage: React.FC = () => {
         false
     );
     setFilteredAssignments(newFilteredAssignments);
-  }, [assignments, filters]); // UI styles from the example
+  }, [assignments, filters]);
 
+  // UI styles from the example
   const commonHeaderStyles =
     "flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-2 bg-white border rounded-lg shadow-sm mb-6";
   const titleStyles = "text-3xl font-bold text-gray-800";
@@ -61,10 +62,7 @@ const AssignmentsPage: React.FC = () => {
     return <LoadingSpinner />;
   }
 
-  if (error) {
-    return <ErrorAlert errorMessage={error} />;
-  } // Define the columns for the DataTable
-
+  // Columns for the DataTable
   const columns: Column<Assignment>[] = [
     { header: "ID", key: "id" },
     {
@@ -87,7 +85,6 @@ const AssignmentsPage: React.FC = () => {
       key: "conductorName",
       render: (assignment) => assignment.conductorName || "N/A",
     },
-    { header: "Date", key: "date" },
     { header: "Status", key: "status" },
     {
       header: "Actions",
@@ -104,7 +101,7 @@ const AssignmentsPage: React.FC = () => {
   ];
 
   function handleAddNewAssignment(): void {
-    window.location.href = "/admin/assignments/addAssignment";
+    navigate("/admin/assignments/addAssignment");
   }
 
   return (
@@ -120,6 +117,9 @@ const AssignmentsPage: React.FC = () => {
             onFilterChange={setFilters}
             filterOptions={[]} // No dropdown filter for now
             filterLabel="Filter By"
+            showSearchResults={false}
+            searchInputPlaceholder="By Date"
+            showDropdownFilter={false}
           />
           <PrimaryButton onClick={() => handleAddNewAssignment()}>Add New Assignment</PrimaryButton>
         </div>

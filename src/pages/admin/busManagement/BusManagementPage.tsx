@@ -103,6 +103,8 @@ const BusManagementPage: React.FC = () => {
             onFilterChange={setFilters}
             filterOptions={enums.serviceType}
             filterLabel="Filter By"
+            showSearchResults={false}
+            searchInputPlaceholder="By Registration number"
           />
           <PrimaryButton onClick={handleAddBus}>Add Bus</PrimaryButton>
         </div>

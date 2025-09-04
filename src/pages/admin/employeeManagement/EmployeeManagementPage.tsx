@@ -64,11 +64,11 @@ const EmployeeManagementPage: React.FC = () => {
 
   useEffect(() => {
     let newFilteredDrivers = drivers.filter((driver) => {
-      const matchesSearchTerm = driver.firstName
+      const matchesSearchTerm = driver.nicNumber
         .toLowerCase()
         .includes(filters.searchTerm.toLowerCase());
 
-      const matchesFilter = !filters.selectedFilter || driver.firstName === filters.selectedFilter;
+      const matchesFilter = !filters.selectedFilter || driver.nicNumber === filters.selectedFilter;
 
       return matchesSearchTerm && matchesFilter;
     });
@@ -78,12 +78,12 @@ const EmployeeManagementPage: React.FC = () => {
 
   useEffect(() => {
     let newFilteredConductors = conductors.filter((conductor) => {
-      const matchesSearchTerm = conductor.firstName
+      const matchesSearchTerm = conductor.nicNumber
         .toLowerCase()
         .includes(filters.searchTerm.toLowerCase());
 
       const matchesFilter =
-        !filters.selectedFilter || conductor.firstName === filters.selectedFilter;
+        !filters.selectedFilter || conductor.nicNumber === filters.selectedFilter;
 
       return matchesSearchTerm && matchesFilter;
     });
@@ -169,9 +169,12 @@ const EmployeeManagementPage: React.FC = () => {
         </div>
         <div className={actionContainerStyles}>
           <SearchAndFilter
-            onFilterChange={(filters) => console.log(filters)}
-            filterOptions={[]} // No dropdown filter for now
+            onFilterChange={(filters) => setFilters(filters)}
+            filterOptions={[]} // No dropdown filter options for now
             filterLabel="Filter By"
+            showSearchResults={false}
+            showDropdownFilter={false}
+            searchInputPlaceholder="Search by NIC"
           />
           <PrimaryButton onClick={handleAddEmployee}>Add Employee</PrimaryButton>
         </div>

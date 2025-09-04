@@ -119,6 +119,9 @@ const ScheduledTripsPage: React.FC = () => {
             onFilterChange={setFilters}
             filterOptions={[]} // No dropdown filter for now
             filterLabel="Filter By"
+            showSearchResults={false}
+            searchInputPlaceholder="By Route Number"
+            showDropdownFilter={false}
           />
           <PrimaryButton onClick={handleAddScheduledTrip}>Add Scheduled Trip</PrimaryButton>
         </div>

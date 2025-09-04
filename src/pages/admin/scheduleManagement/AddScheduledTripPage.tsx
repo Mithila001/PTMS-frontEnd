@@ -1,6 +1,6 @@
 // src/pages/admin/assignmentManagement/AddScheduledTripPage.tsx
 
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { createScheduledTrip } from "../../../api/scheduledTripService";
 import type { ScheduledTrip } from "../../../types/assignment";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
@@ -9,6 +9,8 @@ import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import type { Route } from "../../../types/route";
 import { useToast } from "../../../contexts/ToastContext";
+import SearchInputForm from "../../../components/molecules/SearchInputForm";
+import { useRouteSearch } from "../../../hooks/search/useRouteSearch";
 
 // Define an empty ScheduledTrip object without the 'id' and 'route' for the form state
 const emptyScheduledTrip: Omit<ScheduledTrip, "id"> = {
@@ -23,6 +25,17 @@ const AddScheduledTripPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
+
+  const [routeNumber, setRouteNumber] = useState<string>("");
+  const { routeSearchResults } = useRouteSearch(routeNumber);
+
+  const routeNumberSearchResultsFiltered = routeSearchResults.map(
+    (route) => `${route.routeNumber}`
+  );
+
+  const handleRouteNumberSearch = (value: string) => {
+    setRouteNumber(value);
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -65,6 +78,17 @@ const AddScheduledTripPage: React.FC = () => {
 
         <div className="flex-grow overflow-y-auto">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <SearchInputForm
+              id="routeNumber-search"
+              label="Search Route Number"
+              searchTerm={routeNumber}
+              onSearchChange={(value) => setRouteNumber(value)}
+              searchResults={routeNumberSearchResultsFiltered}
+              onResultClick={(value) => {
+                handleRouteNumberSearch(value);
+              }}
+              placeholder="Enter scheduled trip route number"
+            />
             {/* Route ID */}
             <TextInput
               id="route"

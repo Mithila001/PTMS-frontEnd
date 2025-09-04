@@ -1,5 +1,3 @@
-// ptms-frontEnd\src\components\atoms\SearchBar.tsx
-
 import React, { useState } from "react";
 
 /**
@@ -16,17 +14,20 @@ interface SearchBarProps {
   searchResults?: string[];
   /** Callback function to handle clicks on a search result item. */
   onResultClick?: (result: string) => void;
+  /** Optional boolean to control the visibility of the search results dropdown. Defaults to true. */
+  showDropdown?: boolean;
 }
 
 /**
  * A reusable search bar component with a dynamic dropdown for displaying search results.
  * This component is designed as a controlled component, with its state managed by a parent.
  *
- * @param searchTerm  - The current controlled value of the input field.
+ * @param searchTerm - The current controlled value of the input field.
  * @param onSearchChange - Callback function to handle changes in the search input.
  * @param placeholder - Optional text to display when the input is empty.
  * @param searchResults - Array of strings to be displayed as search results.
  * @param onResultClick - Callback for when a search result is selected.
+ * @param showDropdown - Controls the visibility of the dropdown.
  */
 const SearchBar: React.FC<SearchBarProps> = ({
   searchTerm,
@@ -34,6 +35,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = "Search...",
   searchResults,
   onResultClick,
+  showDropdown = true,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -71,22 +73,26 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </svg>
       </div>
 
-      {isDropdownOpen && searchResults && searchResults.length > 0 && onResultClick && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-          {searchResults.map((result, index) => (
-            <li
-              key={index}
-              onMouseDown={() => {
-                onResultClick(result);
-                setIsDropdownOpen(false);
-              }}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800"
-            >
-              {result}
-            </li>
-          ))}
-        </ul>
-      )}
+      {isDropdownOpen &&
+        showDropdown &&
+        searchResults &&
+        searchResults.length > 0 &&
+        onResultClick && (
+          <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            {searchResults.map((result, index) => (
+              <li
+                key={index}
+                onMouseDown={() => {
+                  onResultClick(result);
+                  setIsDropdownOpen(false);
+                }}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800"
+              >
+                {result}
+              </li>
+            ))}
+          </ul>
+        )}
     </div>
   );
 };
