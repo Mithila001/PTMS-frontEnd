@@ -13,6 +13,7 @@ import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { compareTwoObjects } from "../../../utils/compareTwoObjects";
 import { useToast } from "../../../contexts/ToastContext";
+import TimeInput from "../../../components/atoms/TimeInput";
 
 const ScheduledTripsMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -90,6 +91,20 @@ const ScheduledTripsMoreInfoPage: React.FC = () => {
     }
   };
 
+  // Add this new function inside your component, before the return statement
+  const handleTimeInputChange = (
+    time: Date | null,
+    id: "expectedStartTime" | "expectedEndTime"
+  ) => {
+    setScheduledTrip((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        [id]: time,
+      };
+    });
+  };
+
   const handleDelete = () => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this scheduled trip? This action cannot be undone."
@@ -165,18 +180,18 @@ const ScheduledTripsMoreInfoPage: React.FC = () => {
               readonly={true}
             />
             {/* Expected Start Time */}
-            <TextInput
+            <TimeInput
               id="expectedStartTime"
               label="Expected Start Time"
               value={scheduledTrip.expectedStartTime}
-              onChange={handleTextInputChange}
+              onChange={(time) => handleTimeInputChange(time, "expectedStartTime")}
             />
             {/* Expected End Time */}
-            <TextInput
+            <TimeInput
               id="expectedEndTime"
               label="Expected End Time"
               value={scheduledTrip.expectedEndTime}
-              onChange={handleTextInputChange}
+              onChange={(time) => handleTimeInputChange(time, "expectedEndTime")}
             />
           </form>
         </div>

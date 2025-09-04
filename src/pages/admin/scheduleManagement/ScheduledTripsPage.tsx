@@ -81,12 +81,12 @@ const ScheduledTripsPage: React.FC = () => {
     {
       header: "Start Time",
       key: "expectedStartTime",
-      render: (trip) => trip.expectedStartTime,
+      render: (trip) => (trip.expectedStartTime ? trip.expectedStartTime.toString() : "N/A"),
     },
     {
       header: "End Time",
       key: "expectedEndTime",
-      render: (trip) => trip.expectedEndTime,
+      render: (trip) => (trip.expectedEndTime ? trip.expectedEndTime.toString() : "N/A"),
     },
     {
       header: "Actions",

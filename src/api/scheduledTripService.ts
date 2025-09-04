@@ -40,8 +40,16 @@ export const getScheduledTripById = async (id: number): Promise<ScheduledTrip | 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data: ScheduledTrip | null = await response.json();
-    return data;
+    const data = await response.json();
+
+    // Convert time strings to Date objects before returning
+    const parsedData: ScheduledTrip = {
+      ...data,
+      expectedStartTime: parseTimeFromAPI(data.expectedStartTime),
+      expectedEndTime: parseTimeFromAPI(data.expectedEndTime),
+    };
+
+    return parsedData;
   } catch (error) {
     console.error(`Failed to fetch scheduled trip with ID ${id}:`, error);
     throw error;
@@ -58,12 +66,19 @@ export const createScheduledTrip = async (
   scheduledTripData: Omit<ScheduledTrip, "id">
 ): Promise<ScheduledTrip> => {
   try {
+    // Convert Date objects to "HH:mm:ss" strings for the backend
+    const formattedData = {
+      ...scheduledTripData,
+      expectedStartTime: formatTimeForAPI(scheduledTripData.expectedStartTime),
+      expectedEndTime: formatTimeForAPI(scheduledTripData.expectedEndTime),
+    };
+
     const response = await fetch(`${API_BASE_URL}/scheduled-trips`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(scheduledTripData),
+      body: JSON.stringify(formattedData),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -88,12 +103,22 @@ export const updateScheduledTrip = async (
   scheduledTripDetails: Partial<ScheduledTrip>
 ): Promise<ScheduledTrip> => {
   try {
+    const formattedData = {
+      ...scheduledTripDetails,
+      expectedStartTime: scheduledTripDetails.expectedStartTime
+        ? formatTimeForAPI(scheduledTripDetails.expectedStartTime)
+        : null,
+      expectedEndTime: scheduledTripDetails.expectedEndTime
+        ? formatTimeForAPI(scheduledTripDetails.expectedEndTime)
+        : null,
+    };
+
     const response = await fetch(`${API_BASE_URL}/scheduled-trips/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(scheduledTripDetails),
+      body: JSON.stringify(formattedData),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -164,4 +189,25 @@ export const searchScheduledTrips = async (
     console.error("Failed to search scheduled trips:", error);
     throw error;
   }
+};
+
+// Helper function to format a Date object into a "HH:mm:ss" string.
+const formatTimeForAPI = (date: Date | null): string | null => {
+  if (!date) {
+    return null;
+  }
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+};
+
+const parseTimeFromAPI = (timeString: string | null): Date | null => {
+  if (!timeString) {
+    return null;
+  }
+  const [hours, minutes, seconds] = timeString.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, seconds, 0);
+  return date;
 };

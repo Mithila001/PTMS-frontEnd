@@ -9,8 +9,8 @@ export interface ScheduledTrip {
   id: number;
   route: Route;
   direction: TripDirection;
-  expectedStartTime: string; // "HH:mm:ss" string
-  expectedEndTime: string; // "HH:mm:ss" string
+  expectedStartTime: Date | null;
+  expectedEndTime: Date | null;
 }
 
 export interface Assignment {

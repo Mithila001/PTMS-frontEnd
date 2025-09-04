@@ -11,13 +11,16 @@ import type { Route } from "../../../types/route";
 import { useToast } from "../../../contexts/ToastContext";
 import SearchInputForm from "../../../components/molecules/SearchInputForm";
 import { useRouteSearch } from "../../../hooks/search/useRouteSearch";
+import Dropdown from "../../../components/atoms/Dropdown";
+import type { TripDirection } from "../../../types/assignment";
+import TimeInput from "../../../components/atoms/TimeInput";
 
 // Define an empty ScheduledTrip object without the 'id' and 'route' for the form state
 const emptyScheduledTrip: Omit<ScheduledTrip, "id"> = {
   route: {} as Route, // Initialize with empty Route object
-  expectedStartTime: "",
-  expectedEndTime: "",
-  direction: "TO",
+  expectedStartTime: null,
+  expectedEndTime: null,
+  direction: "TO" as TripDirection,
 };
 
 const AddScheduledTripPage: React.FC = () => {
@@ -29,22 +32,39 @@ const AddScheduledTripPage: React.FC = () => {
   const [routeNumber, setRouteNumber] = useState<string>("");
   const { routeSearchResults } = useRouteSearch(routeNumber);
 
+  const tripDirectionOptions: TripDirection[] = ["TO", "FROM"];
+
   const routeNumberSearchResultsFiltered = routeSearchResults.map(
     (route) => `${route.routeNumber}`
   );
 
   const handleRouteNumberSearch = (value: string) => {
+    // Find the complete Route object that matches the selected route number.
+    const selectedRoute = routeSearchResults.find((route) => route.routeNumber === value);
     setRouteNumber(value);
+
+    // Update the scheduled trip with the full selected route object, or a new empty object if not found.
+    setScheduledTrip((prev) => ({
+      ...prev,
+      route: selectedRoute || ({} as Route), // Revert to using a placeholder object
+    }));
   };
 
   const handleSave = async () => {
+    // Check if a valid route has been selected before proceeding
+    if (!scheduledTrip.route || !scheduledTrip.route.id) {
+      showToast("Please select a valid route before saving. ⚠️", "error");
+      return;
+    }
+
     setLoading(true);
     try {
+      console.log("Scheduled trip details:", scheduledTrip);
       await createScheduledTrip(scheduledTrip);
       console.log("Scheduled trip created successfully.");
       showToast("Scheduled trip created successfully! 👍", "success");
       setScheduledTrip(emptyScheduledTrip); // Reset form after successful submission
-      navigate("/admin/scheduledtrips"); // Redirect to the list page
+      navigate("/admin/scheduled-trips"); // Redirect to the list page
     } catch (error) {
       console.error("Failed to save scheduled trip details:", error);
       showToast("Failed to create scheduled trip. Please try again. 😢", "error");
@@ -69,6 +89,24 @@ const AddScheduledTripPage: React.FC = () => {
     );
   }
 
+  const handleDirectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    setScheduledTrip((prev) => ({
+      ...prev,
+      direction: value as TripDirection,
+    }));
+  };
+
+  const handleTimeInputChange = (
+    time: Date | null,
+    id: "expectedStartTime" | "expectedEndTime"
+  ) => {
+    setScheduledTrip((prev) => ({
+      ...prev,
+      [id]: time,
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex space-x-8">
       <div className="flex flex-col flex-grow bg-white rounded-lg shadow-xl p-8">
@@ -89,43 +127,28 @@ const AddScheduledTripPage: React.FC = () => {
               }}
               placeholder="Enter scheduled trip route number"
             />
-            {/* Route ID */}
-            <TextInput
-              id="route"
-              label="Route ID"
-              type="number"
-              value={String((scheduledTrip.route as any).id || "")}
-              onChange={(e) => {
-                const value = e.target.value;
-                setScheduledTrip((prev) => ({
-                  ...prev,
-                  route: { id: parseInt(value) || 0 } as Route,
-                }));
-              }}
-            />
+
             {/* Expected Start Time */}
-            <TextInput
+            <TimeInput
               id="expectedStartTime"
-              label="Expected Start Time (HH:MM)"
-              type="text"
+              label="Expected Start Time"
               value={scheduledTrip.expectedStartTime}
-              onChange={handleTextInputChange}
+              onChange={(time) => handleTimeInputChange(time, "expectedStartTime")}
             />
             {/* Expected End Time */}
-            <TextInput
+            <TimeInput
               id="expectedEndTime"
-              label="Expected End Time (HH:MM)"
-              type="text"
+              label="Expected End Time"
               value={scheduledTrip.expectedEndTime}
-              onChange={handleTextInputChange}
+              onChange={(time) => handleTimeInputChange(time, "expectedEndTime")}
             />
-            {/* Direction */}
-            <TextInput
+
+            <Dropdown
               id="direction"
               label="Direction"
-              type="text"
+              options={tripDirectionOptions}
               value={scheduledTrip.direction}
-              onChange={handleTextInputChange}
+              onChange={handleDirectionChange}
             />
           </form>
         </div>
