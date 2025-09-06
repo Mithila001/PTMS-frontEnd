@@ -14,12 +14,12 @@ interface ScheduledTripSearchState {
 /**
  * A custom hook to search for scheduled trips using the backend API.
  * It manages the fetching, loading, and error states.
- * @param scheduledTripId The route number to search for (optional).
+ * @param scheduledTripRouteNumber The route number to search for (optional).
  * @param direction The trip direction to search for ("UP" or "DOWN") (optional).
  * @returns An object containing the search results, loading state, and any errors.
  */
 export const useScheduledTripSearch = (
-  scheduledTripId?: string,
+  scheduledTripRouteNumber?: string,
   direction?: TripDirection
 ): ScheduledTripSearchState => {
   const [state, setState] = useState<ScheduledTripSearchState>({
@@ -36,7 +36,7 @@ export const useScheduledTripSearch = (
 
     const fetchScheduledTrips = async () => {
       // Only perform a search if at least one parameter is provided.
-      const hasSearchTerm = scheduledTripId || direction;
+      const hasSearchTerm = scheduledTripRouteNumber || direction;
       if (!hasSearchTerm) {
         setState({ scheduledTripSearchResults: [], loading: false, error: null });
         return;
@@ -45,7 +45,7 @@ export const useScheduledTripSearch = (
       setState((prevState) => ({ ...prevState, loading: true, error: null }));
 
       try {
-        const data = await searchScheduledTrips(scheduledTripId, direction);
+        const data = await searchScheduledTrips(scheduledTripRouteNumber, direction);
 
         if (!signal.aborted) {
           setState({ scheduledTripSearchResults: data, loading: false, error: null });
@@ -68,7 +68,8 @@ export const useScheduledTripSearch = (
     return () => {
       controller.abort();
     };
-  }, [scheduledTripId, direction]);
+  }, [scheduledTripRouteNumber, direction]);
 
+  //console.log("Scheduled Trip Search State:", state); // Debugging log
   return state;
 };

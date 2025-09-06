@@ -155,18 +155,18 @@ export const deleteScheduledTrip = async (id: number): Promise<boolean> => {
 /**
  * Searches for scheduled trips based on optional criteria.
  * This function calls the GET /api/scheduled-trips/search-trips endpoint.
- * @param scheduledTripId The ID of the scheduled trip to search for (optional).
+ * @param scheduledTripRouteNumber The route number to search for (optional).
  * @param direction The trip direction to search for ("UP" or "DOWN") (optional).
  * @returns A promise that resolves to an array of matching ScheduledTrip objects.
  */
 export const searchScheduledTrips = async (
-  scheduledTripId?: string,
+  scheduledTripRouteNumber?: string,
   direction?: TripDirection
 ): Promise<ScheduledTrip[]> => {
   try {
     const params = new URLSearchParams();
-    if (scheduledTripId) {
-      params.append("scheduledTripId", scheduledTripId);
+    if (scheduledTripRouteNumber) {
+      params.append("scheduledTripRouteNumber", scheduledTripRouteNumber);
     }
     if (direction) {
       params.append("direction", direction);

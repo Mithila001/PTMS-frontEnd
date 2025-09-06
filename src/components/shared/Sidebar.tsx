@@ -13,8 +13,6 @@ const menu = [
   { to: "employees", label: "Employees", icon: "👩‍✈️" },
   { to: "routes", label: "Routes", icon: "🗺️" },
   { to: "logs", label: "Logs", icon: "📝" },
-  { to: "reports", label: "Reports", icon: "📈" },
-  { to: "settings", label: "Settings", icon: "⚙️" },
   { to: "assignments", label: "Assignments", icon: "🗂️" },
   { to: "scheduled-trips", label: "Scheduled Trips", icon: "📅" },
 ];
