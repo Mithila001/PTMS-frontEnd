@@ -12,16 +12,37 @@ import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import Dropdown from "../../../components/atoms/Dropdown";
 import { useApplicationData } from "../../../contexts/ApplicationDataContext";
 import { useToast } from "../../../contexts/ToastContext";
+import { useValidation } from "../../../hooks/useValidation";
+import { busValidationSchema } from "../../../schemas/busValidation";
+
+const emptyBus: Omit<Bus, "id"> = {
+  registrationNumber: "",
+  make: "",
+  model: "",
+  yearOfManufacture: new Date().getFullYear(),
+  fuelType: "",
+  serviceType: "",
+  comfortType: "",
+  seatingCapacity: 0,
+  standingCapacity: 0,
+  ntcPermitNumber: 0,
+  active: true,
+  isA_C: false,
+};
 
 const BusMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [bus, setBus] = useState<Bus | null>(null);
+  const [bus, setBus] = useState<Omit<Bus, "id">>(emptyBus);
   const [loading, setLoading] = useState<boolean>(true);
-  const busBackup = useRef<Bus | null>(null);
+  const busBackup = useRef<Omit<Bus, "id"> | null>(null);
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
   const { showToast } = useToast();
   // Use the context to get application data
   const { enums, loading: enumsLoading, error: enumsError } = useApplicationData();
+
+  // Use the validation hook with the bus data and the schema
+  const { errors, isFormValid } = useValidation(bus, busValidationSchema);
 
   useEffect(() => {
     if (id) {
@@ -50,6 +71,11 @@ const BusMoreInfoPage: React.FC = () => {
 
   const handleSave = async () => {
     setLoading(true);
+    setSubmitted(true);
+    if (!isFormValid) {
+      showToast("Please correct the form errors.", "error");
+      return;
+    }
 
     if (bus === null) {
       setLoading(false);
@@ -76,7 +102,7 @@ const BusMoreInfoPage: React.FC = () => {
     }
 
     try {
-      await updateBus(bus.id.toString(), bus);
+      await updateBus(id as string, bus);
       showToast("Bus details updated successfully!", "success");
       console.log("Bus details updated successfully.");
       busBackup.current = bus;
@@ -142,7 +168,7 @@ const BusMoreInfoPage: React.FC = () => {
     const checked = (e.target as HTMLInputElement).checked;
 
     setBus((prevBus) => {
-      if (!prevBus) return null;
+      if (!prevBus) return emptyBus;
 
       return {
         ...prevBus,
@@ -168,12 +194,28 @@ const BusMoreInfoPage: React.FC = () => {
               label="Registration Number"
               value={bus.registrationNumber}
               onChange={handleInputChange}
-              readonly={false}
+              readonly={true}
+              errorMessage={errors.registrationNumber}
+              submitted={submitted}
             />
             {/* Make */}
-            <TextInput id="make" label="Make" value={bus.make} onChange={handleInputChange} />
+            <TextInput
+              id="make"
+              label="Make"
+              value={bus.make}
+              onChange={handleInputChange}
+              errorMessage={errors.make}
+              submitted={submitted}
+            />
             {/* Model */}
-            <TextInput id="model" label="Model" value={bus.model} onChange={handleInputChange} />
+            <TextInput
+              id="model"
+              label="Model"
+              value={bus.model}
+              onChange={handleInputChange}
+              errorMessage={errors.model}
+              submitted={submitted}
+            />
             {/* Year of Manufacture */}
             <TextInput
               id="yearOfManufacture"
@@ -181,6 +223,8 @@ const BusMoreInfoPage: React.FC = () => {
               type="number"
               value={String(bus.yearOfManufacture)}
               onChange={handleInputChange}
+              errorMessage={errors.yearOfManufacture}
+              submitted={submitted}
             />
             {/* Fuel Type */}
             <Dropdown
@@ -189,6 +233,8 @@ const BusMoreInfoPage: React.FC = () => {
               options={enums.fuelType}
               value={bus.fuelType}
               onChange={handleInputChange}
+              errorMessage={errors.fuelType}
+              submitted={submitted}
             />
             {/* Service Type */}
             <Dropdown
@@ -197,6 +243,8 @@ const BusMoreInfoPage: React.FC = () => {
               options={enums.serviceType}
               value={bus.serviceType}
               onChange={handleInputChange}
+              errorMessage={errors.serviceType}
+              submitted={submitted}
             />
             {/* Bus Comfort Type */}
             <Dropdown
@@ -205,6 +253,8 @@ const BusMoreInfoPage: React.FC = () => {
               options={enums.comfortType}
               value={bus.comfortType}
               onChange={handleInputChange}
+              errorMessage={errors.comfortType}
+              submitted={submitted}
             />
             {/* Seating Capacity */}
             <TextInput
@@ -213,6 +263,8 @@ const BusMoreInfoPage: React.FC = () => {
               type="number"
               value={String(bus.seatingCapacity)}
               onChange={handleInputChange}
+              errorMessage={errors.seatingCapacity}
+              submitted={submitted}
             />
             {/* Standing Capacity */}
             <TextInput
@@ -221,6 +273,8 @@ const BusMoreInfoPage: React.FC = () => {
               type="number"
               value={String(bus.standingCapacity)}
               onChange={handleInputChange}
+              errorMessage={errors.standingCapacity}
+              submitted={submitted}
             />
             {/* NTC Permit Number */}
             <TextInput
@@ -229,6 +283,8 @@ const BusMoreInfoPage: React.FC = () => {
               type="number"
               value={String(bus.ntcPermitNumber)}
               onChange={handleInputChange}
+              errorMessage={errors.ntcPermitNumber}
+              submitted={submitted}
             />
             {/* Checkboxes for Active and A/C */}
             <div className="grid grid-cols-2 gap-4">
