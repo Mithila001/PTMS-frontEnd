@@ -1,4 +1,4 @@
-import type { Bus } from "../types/bus";
+import type { Bus, PaginatedBusResponse } from "../types/bus";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // API_BASE_URL = /api
@@ -97,8 +97,10 @@ export const addBus = async (busData: Omit<Bus, "id">): Promise<Bus> => {
 
 export const searchBuses = async (
   registrationNumber: string,
-  serviceType: string
-): Promise<Bus[]> => {
+  serviceType: string,
+  page: number,
+  size: number
+): Promise<PaginatedBusResponse> => {
   const params = new URLSearchParams();
   if (registrationNumber) {
     params.append("registrationNumber", registrationNumber);
@@ -106,6 +108,8 @@ export const searchBuses = async (
   if (serviceType) {
     params.append("serviceType", serviceType);
   }
+  params.append("page", page.toString());
+  params.append("size", size.toString());
 
   try {
     const response = await fetch(`${API_BASE_URL}/buses/search?${params.toString()}`);
