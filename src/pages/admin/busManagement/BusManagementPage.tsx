@@ -1,5 +1,3 @@
-// F:\OnGoinProject\Transport Management System\ptms-frontEnd\src\pages\admin\busManagement\BusManagementPage.tsx
-
 import React, { useEffect, useState, useRef } from "react";
 import type { Bus } from "../../../types/bus";
 import SearchAndFilter from "../../../components/organisms/SearchAndFilter";
@@ -11,9 +9,6 @@ import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import { useToast } from "../../../contexts/ToastContext";
 import { useBusSearch } from "../../../hooks/search/useBusSearch";
 
-// A brief explanation of this new component:
-// This is a small, inline spinner component that is less intrusive than the main LoadingSpinner.
-// We'll use this for infinite scrolling.
 const InlineLoadingSpinner: React.FC = () => (
   <div className="flex justify-center py-4">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -22,7 +17,7 @@ const InlineLoadingSpinner: React.FC = () => (
 
 const BusManagementPage: React.FC = () => {
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
   const { enums } = useApplicationData();
   const { showToast } = useToast();
 
@@ -35,30 +30,33 @@ const BusManagementPage: React.FC = () => {
     setPage,
   } = useBusSearch(filters.searchTerm, filters.selectedFilter);
 
-  const observerTarget = useRef(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // A brief explanation of the combined useEffect logic:
-  // This useEffect now manages two separate behaviors based on the `loading` state.
-  // When the component is loading for the first time, it sets `isInitialLoad` to false.
-  // When loading more records (not initial load), it handles the Intersection Observer logic.
+  // Track when initial data has loaded
   useEffect(() => {
-    if (loading && buses.length === 0) {
-      // This is the initial load, so we show the full-page spinner.
-      setIsInitialLoad(true);
-      return;
-    } else if (loading && buses.length > 0) {
-      // This is a subsequent load for more records, so we don't show the full-page spinner.
-      setIsInitialLoad(false);
-    } else if (!loading) {
-      setIsInitialLoad(false);
+    if (!loading && buses.length > 0 && !hasLoadedInitialData) {
+      setHasLoadedInitialData(true);
+    }
+  }, [loading, buses.length, hasLoadedInitialData]);
+
+  // Handle intersection observer for infinite scrolling
+  useEffect(() => {
+    // Clean up existing observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
     }
 
-    // Don't observe if we are on the last page.
-    if (currentPage >= totalPages - 1) return;
+    // Don't set up observer if we're on the last page or still loading initial data
+    if (currentPage >= totalPages - 1 || totalPages === 0) {
+      return;
+    }
 
-    const observer = new IntersectionObserver(
+    // Create new observer
+    observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !loading) {
           setPage(currentPage + 1);
         }
       },
@@ -67,17 +65,21 @@ const BusManagementPage: React.FC = () => {
       }
     );
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
+    // Start observing
+    if (observerTarget.current && observerRef.current) {
+      observerRef.current.observe(observerTarget.current);
     }
 
+    // Cleanup function
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
       }
     };
-  }, [loading, currentPage, totalPages, setPage, buses.length]);
+  }, [currentPage, totalPages, setPage, loading]);
 
+  // Handle errors
   useEffect(() => {
     if (error) {
       showToast(`Error: ${error}`, "error");
@@ -119,11 +121,33 @@ const BusManagementPage: React.FC = () => {
     },
   ];
 
-  // A brief explanation of the conditional rendering:
-  // We first check for the initial load. If it's the first time and we're loading,
-  // we show the full-page spinner. Otherwise, we show the main content.
-  if (isInitialLoad && loading) {
-    return <LoadingSpinner />;
+  // Show full page loading spinner for initial load
+  if (!hasLoadedInitialData && loading) {
+    return (
+      <div className="container mx-auto mt-2 p-2 bg-white shadow-lg rounded-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-2 bg-white border rounded-lg shadow-sm mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Bus Data</h1>
+            <p className="text-gray-600 mt-1">Manage your fleet information</p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <SearchAndFilter
+              searchTerm={filters.searchTerm}
+              selectedFilter={filters.selectedFilter}
+              onFilterChange={setFilters}
+              filterOptions={enums.serviceType}
+              filterLabel="Filter By"
+              showSearchResults={false}
+              searchInputPlaceholder="By Registration number"
+            />
+            <PrimaryButton onClick={handleAddBus}>Add Bus</PrimaryButton>
+          </div>
+        </div>
+        <div className="flex justify-center items-center py-20">
+          <LoadingSpinner />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -135,6 +159,8 @@ const BusManagementPage: React.FC = () => {
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <SearchAndFilter
+            searchTerm={filters.searchTerm}
+            selectedFilter={filters.selectedFilter}
             onFilterChange={setFilters}
             filterOptions={enums.serviceType}
             filterLabel="Filter By"
@@ -146,19 +172,21 @@ const BusManagementPage: React.FC = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <DataTable data={buses} columns={busColumns} />
-        {/*
-          A brief explanation of the new loading indicator:
-          This part now checks if a new page is being loaded and if it's not the initial load.
-          If so, it displays the smaller `InlineLoadingSpinner`.
-        */}
-        {loading && !isInitialLoad && <InlineLoadingSpinner />}
-        {/*
-          A brief explanation of the sentinel element:
-          We conditionally render the sentinel only if there are more pages to load.
-          This prevents the Intersection Observer from running unnecessarily when we're at the end.
-        */}
-        {currentPage < totalPages - 1 && <div ref={observerTarget}></div>}
+        {buses.length === 0 && !loading ? (
+          <div className="flex justify-center items-center py-20">
+            <p className="text-gray-500 text-lg">No buses found</p>
+          </div>
+        ) : (
+          <>
+            <DataTable data={buses} columns={busColumns} />
+
+            {/* Show inline loading spinner only when loading more data */}
+            {loading && hasLoadedInitialData && <InlineLoadingSpinner />}
+
+            {/* Observer target for infinite scrolling */}
+            {currentPage < totalPages - 1 && <div ref={observerTarget} className="h-1" />}
+          </>
+        )}
       </div>
     </div>
   );

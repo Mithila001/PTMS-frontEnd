@@ -99,7 +99,8 @@ export const searchBuses = async (
   registrationNumber: string,
   serviceType: string,
   page: number,
-  size: number
+  size: number,
+  signal?: AbortSignal
 ): Promise<PaginatedBusResponse> => {
   const params = new URLSearchParams();
   if (registrationNumber) {
@@ -112,7 +113,7 @@ export const searchBuses = async (
   params.append("size", size.toString());
 
   try {
-    const response = await fetch(`${API_BASE_URL}/buses/search?${params.toString()}`);
+    const response = await fetch(`${API_BASE_URL}/buses/search?${params.toString()}`, { signal });
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Failed to search buses");

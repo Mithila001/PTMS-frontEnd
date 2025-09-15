@@ -1,37 +1,45 @@
-import React, { useState } from "react";
+// src/components/organisms/SearchAndFilter.tsx
+
+import React from "react";
 import SearchBar from "../atoms/SearchBar";
 import DropdownFilter from "../molecules/DropdownFilter";
-import { useBusSearch } from "../../hooks/search/useBusSearch";
 
 // Defines the props for our SearchAndFilter component.
 interface SearchAndFilterProps {
+  // Pass the current filter values as props from the parent
+  searchTerm: string;
+  selectedFilter: string;
   onFilterChange: (filters: { searchTerm: string; selectedFilter: string }) => void;
-  filterOptions: string[]; // The list of options for the dropdown filter.
-  filterLabel: string; // The label for the dropdown filter.
-  showSearchResults?: boolean; // Optional prop to control search bar dropdown visibility
-  showDropdownFilter?: boolean; // control filter dropdown visibility
-  searchInputPlaceholder?: string; // Placeholder text for the search input
+  filterOptions: string[];
+  filterLabel: string;
+  showSearchResults?: boolean;
+  showDropdownFilter?: boolean;
+  searchInputPlaceholder?: string;
+  // This is a new optional prop to show search results, which we now
+  // get from the parent (which gets them from the hook).
+  searchResults?: string[];
+  // Loading prop for a loading state in the SearchAndFilter UI
+  loading?: boolean;
 }
 
 const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
+  searchTerm, // <-- Now receiving searchTerm from props
+  selectedFilter, // <-- Now receiving selectedFilter from props
   onFilterChange,
   filterOptions,
   filterLabel,
   showSearchResults = true,
   showDropdownFilter = true,
   searchInputPlaceholder = "Search...",
+  searchResults = [], // <-- Now receiving searchResults from props
+  loading = false,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("");
-
-  const { busSearchResults, loading, error } = useBusSearch(searchTerm, selectedFilter);
-
-  const searchResults = busSearchResults.map((bus) => bus.registrationNumber);
+  // No local state is needed here anymore!
+  // useBusSearch is also removed from this component
 
   // Function to handle changes in search and filter inputs.
   const handleChanges = (newSearchTerm: string, newSelectedFilter: string) => {
-    setSearchTerm(newSearchTerm);
-    setSelectedFilter(newSelectedFilter);
+    // This now just passes the values up to the parent
     onFilterChange({ searchTerm: newSearchTerm, selectedFilter: newSelectedFilter });
   };
 
@@ -40,22 +48,21 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       <div className="flex items-end gap-4">
         <div className="w-full">
           <SearchBar
-            searchTerm={searchTerm}
+            searchTerm={searchTerm} // <-- Input value is now from parent props
             onSearchChange={(value) => handleChanges(value, selectedFilter)}
             placeholder={searchInputPlaceholder}
-            searchResults={searchResults}
+            searchResults={searchResults} // <-- Search results are now from parent props
             onResultClick={(result) => {
               handleChanges(result, selectedFilter);
             }}
             showDropdown={showSearchResults}
           />
         </div>
-        {/* Conditionally render the DropdownFilter */}
         {showDropdownFilter && (
           <div className="w-full">
             <DropdownFilter
               options={filterOptions}
-              selectedValue={selectedFilter}
+              selectedValue={selectedFilter} // <-- Dropdown value is now from parent props
               onValueChange={(value) => handleChanges(searchTerm, value)}
               label={filterLabel}
             />
