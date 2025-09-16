@@ -1,9 +1,9 @@
-// src/hooks/search/useBusSearch.ts
+// src/hooks/search/useBusData.ts
 import { useState, useEffect, useRef, useCallback } from "react";
 import { searchBuses } from "../../api/busService";
 import type { Bus, PaginatedBusResponse } from "../../types/bus";
 
-interface BusSearchState {
+interface BusDataState {
   busSearchResults: Bus[];
   loading: boolean;
   error: string | null;
@@ -13,13 +13,13 @@ interface BusSearchState {
   setPage: (page: number) => void;
 }
 
-export const useBusSearch = (
+export const useBusData = (
   searchTerm: string,
   serviceType: string,
   initialPage: number = 0,
   pageSize: number = 10
-): BusSearchState => {
-  const [state, setState] = useState<Omit<BusSearchState, "setPage">>({
+): BusDataState => {
+  const [state, setState] = useState<Omit<BusDataState, "setPage">>({
     busSearchResults: [],
     loading: false,
     error: null,

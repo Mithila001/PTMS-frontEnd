@@ -175,6 +175,8 @@ const EmployeeManagementPage: React.FC = () => {
             showSearchResults={false}
             showDropdownFilter={false}
             searchInputPlaceholder="Search by NIC"
+            searchTerm={filters.searchTerm}
+            selectedFilter={filters.selectedFilter}
           />
           <PrimaryButton onClick={handleAddEmployee}>Add Employee</PrimaryButton>
         </div>

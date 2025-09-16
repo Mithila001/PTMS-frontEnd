@@ -13,12 +13,14 @@ type DataTableProps<T extends object> = {
   columns: Column<T>[];
   // New optional prop for columns that require line breaks.
   columnsWithLineBreaks?: (keyof T | "actions")[];
+  isLoading?: boolean;
 };
 
 const DataTable = <T extends object>({
   data,
   columns,
   columnsWithLineBreaks = [],
+  isLoading = false,
 }: DataTableProps<T>) => {
   // State for sorting
   const [sortConfig, setSortConfig] = useState<{
@@ -118,6 +120,17 @@ const DataTable = <T extends object>({
             </tr>
           ))}
         </tbody>
+        <tfoot>
+          {isLoading && (
+            <tr>
+              <td colSpan={columns.length}>
+                <div className="flex justify-center py-4">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-transparent border-t-blue-500" />
+                </div>
+              </td>
+            </tr>
+          )}
+        </tfoot>
       </table>
     </div>
   );

@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import type { Route } from "../../../types/route";
 import { useToast } from "../../../contexts/ToastContext";
 import SearchInputForm from "../../../components/molecules/SearchInputForm";
-import { useRouteSearch } from "../../../hooks/search/useRouteSearch";
+import { useRouteSearch } from "../../../hooks/data/useRouteSearch";
 import Dropdown from "../../../components/atoms/Dropdown";
 import type { TripDirection } from "../../../types/assignment";
 import TimeInput from "../../../components/atoms/TimeInput";

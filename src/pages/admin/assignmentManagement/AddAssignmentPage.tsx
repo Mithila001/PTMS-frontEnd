@@ -7,10 +7,10 @@ import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { useNavigate } from "react-router-dom";
-import { useBusSearch } from "../../../hooks/search/useBusSearch";
+import { useBusData } from "../../../hooks/data/useBusData";
 import SearchInputForm from "../../../components/molecules/SearchInputForm";
-import { useEmployeeSearch } from "../../../hooks/search/useEmployeeSearch";
-import { useScheduledTripSearch } from "../../../hooks/search/useScheduledTripSearch";
+import { useEmployeeSearch } from "../../../hooks/data/useEmployeeSearch";
+import { useScheduledTripSearch } from "../../../hooks/data/useScheduledTripSearch";
 import type { Route } from "../../../types/route";
 import DateInput from "../../../components/atoms/DateInput";
 import TimeInput from "../../../components/atoms/TimeInput";
@@ -56,7 +56,7 @@ const AddAssignmentPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const selectedFilter = useRef<string>("");
 
-  const { busSearchResults } = useBusSearch(searchTerm, selectedFilter.current);
+  const { busSearchResults } = useBusData(searchTerm, selectedFilter.current);
   const busSearchResultsFiltered = busSearchResults.map((bus) => bus.registrationNumber);
 
   // Driver Search

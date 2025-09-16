@@ -34,7 +34,12 @@ export type EmployeeSearchResult = {
   nicNumber: string;
   firstName: string;
   lastName: string;
+  dateOfBirth: string;
   contactNumber: string;
+  email: string;
+  address: string;
+  dateJoined: string;
+  currentEmployee: boolean;
 };
 
 export type DriverSearchResult = EmployeeSearchResult & {
@@ -44,3 +49,32 @@ export type DriverSearchResult = EmployeeSearchResult & {
 export type ConductorSearchResult = EmployeeSearchResult & {
   conductorLicenseNumber: string;
 };
+
+export interface PaginatedEmployeeResponse {
+  content: EmployeeSearchResult[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: {
+      empty: boolean;
+      unsorted: boolean;
+      sorted: boolean;
+    };
+    offset: number;
+    unpaged: boolean;
+    paged: boolean;
+  };
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  size: number;
+  number: number;
+  sort: {
+    empty: boolean;
+    unsorted: boolean;
+    sorted: boolean;
+  };
+  numberOfElements: number;
+  empty: boolean;
+}

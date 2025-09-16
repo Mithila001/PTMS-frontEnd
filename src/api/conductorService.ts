@@ -1,4 +1,4 @@
-import type { Conductor, EmployeeSearchResult } from "../types/employee";
+import type { Conductor, EmployeeSearchResult, PaginatedEmployeeResponse } from "../types/employee";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -142,23 +142,30 @@ export const deleteConductor = async (id: number): Promise<boolean> => {
 };
 
 export const searchConductors = async (
+  page: number,
+  size: number,
   nicNumber?: string,
   name?: string,
   contactNumber?: string,
-  licenseNumber?: string
-): Promise<EmployeeSearchResult[]> => {
+  licenseNumber?: string,
+  signal?: AbortSignal
+): Promise<PaginatedEmployeeResponse> => {
   const params = new URLSearchParams();
   if (nicNumber) params.append("nicNumber", nicNumber);
   if (name) params.append("name", name);
   if (contactNumber) params.append("contactNumber", contactNumber);
   if (licenseNumber) params.append("licenseNumber", licenseNumber);
+  params.append("page", page.toString());
+  params.append("size", size.toString());
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/employees/conductors/search?${params.toString()}`
+      `${API_BASE_URL}/employees/conductors/search?${params.toString()}`,
+      { signal }
     );
     if (!response.ok) {
-      throw new Error("Failed to search conductors");
+      const error = await response.json();
+      throw new Error(error.message || "Failed to search conductors");
     }
     return response.json();
   } catch (error) {

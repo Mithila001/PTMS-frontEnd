@@ -7,13 +7,7 @@ import DataTable from "../../../components/molecules/DataTable";
 import { useApplicationData } from "../../../contexts/ApplicationDataContext";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import { useToast } from "../../../contexts/ToastContext";
-import { useBusSearch } from "../../../hooks/search/useBusSearch";
-
-const InlineLoadingSpinner: React.FC = () => (
-  <div className="flex justify-center py-4">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-  </div>
-);
+import { useBusData } from "../../../hooks/data/useBusData";
 
 const BusManagementPage: React.FC = () => {
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
@@ -28,7 +22,7 @@ const BusManagementPage: React.FC = () => {
     currentPage,
     totalPages,
     setPage,
-  } = useBusSearch(filters.searchTerm, filters.selectedFilter);
+  } = useBusData(filters.searchTerm, filters.selectedFilter);
 
   const observerTarget = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -178,11 +172,11 @@ const BusManagementPage: React.FC = () => {
           </div>
         ) : (
           <>
-            <DataTable data={buses} columns={busColumns} />
-
-            {/* Show inline loading spinner only when loading more data */}
-            {loading && hasLoadedInitialData && <InlineLoadingSpinner />}
-
+            <DataTable
+              data={buses}
+              columns={busColumns}
+              isLoading={loading && hasLoadedInitialData}
+            />
             {/* Observer target for infinite scrolling */}
             {currentPage < totalPages - 1 && <div ref={observerTarget} className="h-1" />}
           </>
