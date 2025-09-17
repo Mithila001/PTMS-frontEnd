@@ -8,3 +8,11 @@ export interface ValidationRules {
   max?: number;
   isNumeric?: boolean;
 }
+
+export type BaseResponse<T> = {
+  status: number;
+  message: string;
+  data: T;
+  errors: string[] | null;
+  timestamp: string;
+};

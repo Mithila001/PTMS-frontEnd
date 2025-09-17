@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "../../components/shared/Sidebar";
 import LoginPage from "../LoginPage";
 import LogsPage from "./LogsPage";
+import UserManagementPage from "./user/UserManagementPage";
 
 const OverviewPage = lazy(() => import("./OverviewPage"));
 const BusManagementPage = lazy(() => import("./busManagement/BusManagementPage"));
@@ -43,6 +44,7 @@ const DashboardPage: React.FC = () => {
               <Route path="logs" element={<LogsPage />} />
               <Route path="assignments" element={<AssignmentManagementPage />} />
               <Route path="scheduled-trips" element={<ScheduledTripsPage />} />
+              <Route path="user" element={<UserManagementPage />} />
 
               {/* Redirect old root /admin to overview */}
               <Route path="*" element={<Navigate to="/overview" replace />} />

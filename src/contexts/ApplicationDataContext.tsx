@@ -4,6 +4,7 @@ import {
   fetchBusEnumServiceTypes,
   fetchBusEnumComfortTypes,
   fetchBusEnumFuelTypes,
+  fetchUserEnumRoles,
 } from "../api/enumService";
 import { useToast } from "./ToastContext";
 
@@ -12,6 +13,7 @@ interface ApplicationDataContextType {
     serviceType: string[];
     comfortType: string[];
     fuelType: string[];
+    userRoles: string[];
   };
   loading: boolean;
   error: string | null;
@@ -24,6 +26,7 @@ export const ApplicationDataProvider = ({ children }: { children: ReactNode }) =
     serviceType: [],
     comfortType: [],
     fuelType: [],
+    userRoles: [],
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,16 +36,19 @@ export const ApplicationDataProvider = ({ children }: { children: ReactNode }) =
   useEffect(() => {
     const fetchEnums = async () => {
       try {
-        const [serviceTypesData, comfortTypesData, fuelTypesData] = await Promise.all([
-          fetchBusEnumServiceTypes(),
-          fetchBusEnumComfortTypes(),
-          fetchBusEnumFuelTypes(),
-        ]);
+        const [serviceTypesData, comfortTypesData, fuelTypesData, userRolesData] =
+          await Promise.all([
+            fetchBusEnumServiceTypes(),
+            fetchBusEnumComfortTypes(),
+            fetchBusEnumFuelTypes(),
+            fetchUserEnumRoles(),
+          ]);
 
         setEnums({
           serviceType: serviceTypesData,
           comfortType: comfortTypesData,
           fuelType: fuelTypesData,
+          userRoles: userRolesData,
         });
       } catch (err) {
         setError("Failed to fetch application data.");

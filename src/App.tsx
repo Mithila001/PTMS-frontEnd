@@ -24,6 +24,7 @@ import ScheduledTripsMoreInfoPage from "./pages/admin/scheduleManagement/Schedul
 import AddScheduledTripPage from "./pages/admin/scheduleManagement/AddScheduledTripPage";
 import AddAssignmentPage from "./pages/admin/assignmentManagement/AddAssignmentPage";
 import ConductorMoreInfoPage from "./pages/admin/employeeManagement/ConductorMoreInfoPage";
+import AddUserPage from "./pages/admin/user/AddUserPage";
 
 function App() {
   const { loading, isLoggedIn } = useAuth(); // Also get isLoggedIn state
@@ -70,6 +71,8 @@ function App() {
                 element={<AddScheduledTripPage />}
               />
               <Route path="/admin/assignments/addAssignment" element={<AddAssignmentPage />} />
+
+              <Route path="/admin/userManagement/addUser" element={<AddUserPage />} />
             </Route>
             {/* If the user is logged in, redirect root to admin */}
             {isLoggedIn && <Route path="/" element={<Navigate to="/admin" replace />} />}

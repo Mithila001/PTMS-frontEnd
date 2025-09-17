@@ -49,3 +49,17 @@ export const fetchBusEnumFuelTypes = async (): Promise<string[]> => {
     throw new Error("Failed to fetch bus enum fuel types");
   }
 };
+
+export const fetchUserEnumRoles = async (): Promise<string[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/enums/user-enum-roles`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data: string[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch user enum roles:", error);
+    throw new Error("Failed to fetch user enum roles");
+  }
+};

@@ -22,3 +22,21 @@ export type UserCredentials = {
   username: string;
   password: string;
 };
+
+export interface UserResponse {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  nic: string;
+  roles: string[];
+}
+
+export interface NewUser extends Omit<UserResponse, "id" | "username"> {}
+
+export interface RegisteredUserResponse {
+  username: string;
+  password: string;
+  message: string;
+}
