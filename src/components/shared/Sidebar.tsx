@@ -1,13 +1,16 @@
-// ptms-frontEnd\src\components\shared\Sidebar.tsx
+// F:\OnGoinProject\Transport Management System\ptms-frontEnd\src\components\shared\Sidebar.tsx
+
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-const menu = [
+// Define the full menu
+const fullMenu = [
   { to: "overview", label: "Overview", icon: "📊" },
   { to: "buses", label: "Buses", icon: "🚌" },
   { to: "employees", label: "Employees", icon: "👩‍✈️" },
@@ -18,7 +21,21 @@ const menu = [
   { to: "user", label: "User Management", icon: "👤" },
 ];
 
+// Define the menu for a standard user
+const userMenu = [
+  { to: "buses", label: "Buses", icon: "🚌" },
+  { to: "routes", label: "Routes", icon: "🗺️" },
+  { to: "employees", label: "Employees", icon: "👩‍✈️" },
+  { to: "assignments", label: "Assignments", icon: "🗂️" },
+];
+
 const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
+  // Get the highest role from the auth context
+  const { highestRole } = useAuth();
+
+  // Determine which menu to display based on the user's role
+  const menuToDisplay = highestRole === "ROLE_ADMIN" ? fullMenu : userMenu;
+
   return (
     <>
       {/* Mobile overlay */}
@@ -49,7 +66,7 @@ const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
         </div>
 
         <nav className="py-4 flex-1 overflow-auto" aria-label="Sidebar">
-          {menu.map((m) => (
+          {menuToDisplay.map((m) => (
             <NavLink
               key={m.to}
               to={m.to === "overview" ? "/admin" : `/admin/${m.to}`}

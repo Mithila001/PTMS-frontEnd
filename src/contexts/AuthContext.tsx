@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { fetchCurrentUser, login, logout } from "../api/authService";
-import type { User, UserCredentials } from "../types/user";
+import type { Role, User, UserCredentials } from "../types/user";
 
 // Define the shape of our authentication context
 interface AuthContextType {
@@ -12,6 +12,7 @@ interface AuthContextType {
   login: (credentials: UserCredentials) => Promise<void>;
   logout: () => Promise<void>;
   hasRole: (roleName: string) => boolean;
+  highestRole: string | null;
 }
 
 // Create the context with an initial undefined value
@@ -29,6 +30,30 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [highestRole, setHighestRole] = useState<string | null>(null);
+
+  const ROLE_HIERARCHY = ["ROLE_ADMIN", "ROLE_OPERATIONS_MANAGER", "ROLE_USER"];
+
+  /**
+   * Determines the highest role from a user's roles array.
+   */
+  const determineHighestRole = (roles: Role[]): string | null => {
+    if (!roles || roles.length === 0) {
+      return null;
+    }
+
+    if (roles.length === 1) {
+      return roles[0].toString();
+    }
+
+    // Find the first role in the user's list that matches our hierarchy
+    for (const hierarchyRole of ROLE_HIERARCHY) {
+      if (roles.some((userRole) => userRole.name === hierarchyRole)) {
+        return hierarchyRole;
+      }
+    }
+    return null;
+  };
 
   // Use an effect to check for a logged-in user on component mount
   useEffect(() => {
@@ -37,6 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const currentUser = await fetchCurrentUser();
         if (currentUser) {
           setUser(currentUser);
+          setHighestRole(determineHighestRole(currentUser.roles));
         }
       } catch (error) {
         console.error("Failed to fetch initial user status:", error);
@@ -83,6 +109,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     login: handleLogin,
     logout: handleLogout,
     hasRole,
+    highestRole,
   };
 
   // Render the children wrapped in the context provider

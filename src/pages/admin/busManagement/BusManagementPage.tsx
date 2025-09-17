@@ -8,11 +8,13 @@ import { useApplicationData } from "../../../contexts/ApplicationDataContext";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import { useToast } from "../../../contexts/ToastContext";
 import { useBusData } from "../../../hooks/data/useBusData";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const BusManagementPage: React.FC = () => {
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });
   const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
   const { enums } = useApplicationData();
+  // const { highestRole, user } = useAuth();
   const { showToast } = useToast();
 
   const {
@@ -29,6 +31,7 @@ const BusManagementPage: React.FC = () => {
 
   // Track when initial data has loaded
   useEffect(() => {
+    // showToast(`Logged in as: ${user?.roles}`, "info");
     if (!loading && buses.length > 0 && !hasLoadedInitialData) {
       setHasLoadedInitialData(true);
     }

@@ -112,7 +112,7 @@ const UserMoreInfoPage: React.FC = () => {
       deleteUserById(id as string)
         .then(() => {
           showToast("User deleted successfully!", "success");
-          navigate("/admin/users");
+          window.location.href = "/admin/user";
         })
         .catch((error) => {
           console.error("Failed to delete user:", error);

@@ -1,5 +1,10 @@
 import type { BaseResponse } from "./../types/common";
-import type { NewUser, RegisteredUserResponse, UserResponse } from "../types/user";
+import type {
+  NewUser,
+  RegisteredUserResponse,
+  UserResponse,
+  UserUpdateRequest,
+} from "../types/user";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -27,9 +32,9 @@ export const getAllUsers = async (): Promise<UserResponse[]> => {
   }
 };
 
-export const getUserById = async (id: string): Promise<UserResponse> => {
+export const getUserById = async (id: string, signal?: AbortSignal): Promise<UserResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/${id}`, { credentials: "include" });
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, { credentials: "include", signal });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -46,6 +51,12 @@ export const getUserById = async (id: string): Promise<UserResponse> => {
     }
     return data.data;
   } catch (error) {
+    // Check if the error is an AbortError
+    if (error instanceof Error && error.name === "AbortError") {
+      console.log("Fetch aborted");
+      // Do not throw the error if it was a deliberate abort
+      return Promise.reject(new Error("Request aborted"));
+    }
     console.error(`Failed to fetch user with ID ${id}:`, error);
     throw error;
   }
@@ -110,13 +121,21 @@ export const createUser = async (newUser: NewUser): Promise<RegisteredUserRespon
 };
 
 export const updateUser = async (id: string, updatedUser: UserResponse): Promise<UserResponse> => {
+  const userUpdateRequest: UserUpdateRequest = {
+    firstName: updatedUser.firstName,
+    lastName: updatedUser.lastName,
+    email: updatedUser.email,
+    nic: updatedUser.nic,
+    roles: updatedUser.roles,
+  };
+
   try {
     const response = await fetch(`${API_BASE_URL}/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedUser),
+      body: JSON.stringify(userUpdateRequest),
       credentials: "include",
     });
 

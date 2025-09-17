@@ -33,6 +33,14 @@ export interface UserResponse {
   roles: string[];
 }
 
+export interface UserUpdateRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  nic: string;
+  roles: string[];
+}
+
 export interface NewUser extends Omit<UserResponse, "id" | "username"> {}
 
 export interface RegisteredUserResponse {
