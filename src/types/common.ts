@@ -7,6 +7,8 @@ export interface ValidationRules {
   min?: number;
   max?: number;
   isNumeric?: boolean;
+  pattern?: RegExp;
+  errorMessage?: string;
 }
 
 export type BaseResponse<T> = {

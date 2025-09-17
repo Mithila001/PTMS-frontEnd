@@ -73,6 +73,12 @@ export const useValidation = <T extends FormData>(
           continue;
         }
       }
+
+      // Pattern (RegEx) check
+      if (rules?.pattern && typeof value === "string" && !rules.pattern.test(value)) {
+        newErrors[key] = rules.errorMessage || "Invalid format.";
+        continue;
+      }
     }
 
     setErrors(newErrors);

@@ -27,7 +27,7 @@ export const getAllUsers = async (): Promise<UserResponse[]> => {
   }
 };
 
-export const getUserById = async (id: number): Promise<UserResponse> => {
+export const getUserById = async (id: string): Promise<UserResponse> => {
   try {
     const response = await fetch(`${API_BASE_URL}/users/${id}`, { credentials: "include" });
 
@@ -51,7 +51,7 @@ export const getUserById = async (id: number): Promise<UserResponse> => {
   }
 };
 
-export const deleteUserById = async (id: number): Promise<string> => {
+export const deleteUserById = async (id: string): Promise<string> => {
   try {
     const response = await fetch(`${API_BASE_URL}/users/${id}`, {
       method: "DELETE",
@@ -105,6 +105,37 @@ export const createUser = async (newUser: NewUser): Promise<RegisteredUserRespon
     return data.data;
   } catch (error) {
     console.error("Failed to create user:", error);
+    throw error;
+  }
+};
+
+export const updateUser = async (id: string, updatedUser: UserResponse): Promise<UserResponse> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedUser),
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: BaseResponse<UserResponse> = await response.json();
+
+    if (data.status !== 200) {
+      throw new Error(
+        `API error: ${data.message} - ${
+          data.errors ? JSON.stringify(data.errors) : "No details provided"
+        }`
+      );
+    }
+    return data.data;
+  } catch (error) {
+    console.error(`Failed to update user with ID ${id}:`, error);
     throw error;
   }
 };
