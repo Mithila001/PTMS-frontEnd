@@ -55,6 +55,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return null;
   };
 
+  // This is the CRITICAL ADDITION for state synchronization.
+  useEffect(() => {
+    if (user) {
+      setHighestRole(determineHighestRole(user.roles));
+    } else {
+      setHighestRole(null);
+    }
+  }, [user]);
+
   // Use an effect to check for a logged-in user on component mount
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -62,7 +71,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const currentUser = await fetchCurrentUser();
         if (currentUser) {
           setUser(currentUser);
-          setHighestRole(determineHighestRole(currentUser.roles));
+          //setHighestRole(determineHighestRole(currentUser.roles));
         }
       } catch (error) {
         console.error("Failed to fetch initial user status:", error);
