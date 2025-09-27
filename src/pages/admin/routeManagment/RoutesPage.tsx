@@ -109,6 +109,8 @@ const RoutesPage: React.FC = () => {
             showSearchResults={false}
             showDropdownFilter={false}
             searchInputPlaceholder="By Route Number"
+            searchTerm={filters.searchTerm}
+            selectedFilter={filters.selectedFilter}
           />
           <PrimaryButton onClick={handleAddRoute}>Add Route</PrimaryButton>
         </div>

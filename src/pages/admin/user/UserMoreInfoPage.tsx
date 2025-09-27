@@ -1,7 +1,7 @@
 // File: src/pages/admin/user/UserMoreInfoPage.tsx
 
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
@@ -25,7 +25,6 @@ const emptyUser: Omit<UserResponse, "id"> = {
 
 const UserMoreInfoPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const userBackup = useRef<UserResponse | null>(null);

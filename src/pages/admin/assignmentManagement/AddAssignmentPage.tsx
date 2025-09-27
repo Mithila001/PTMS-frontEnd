@@ -131,18 +131,18 @@ const AddAssignmentPage: React.FC = () => {
     }
   };
 
-  const handleTextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setAssignment((prevAssignment) => {
-      // Check if the input ID should be a number
-      const isNumberField = ["scheduledTripId", "busId", "driverId", "conductorId"].includes(id);
-      const newValue = isNumberField ? parseInt(value) || 0 : value;
-      return {
-        ...prevAssignment,
-        [id]: newValue,
-      };
-    });
-  };
+  // const handleTextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { id, value } = e.target;
+  //   setAssignment((prevAssignment) => {
+  //     // Check if the input ID should be a number
+  //     const isNumberField = ["scheduledTripId", "busId", "driverId", "conductorId"].includes(id);
+  //     const newValue = isNumberField ? parseInt(value) || 0 : value;
+  //     return {
+  //       ...prevAssignment,
+  //       [id]: newValue,
+  //     };
+  //   });
+  // };
 
   if (loading) {
     return (

@@ -1,4 +1,3 @@
-import React from "react";
 import type { Driver, Conductor } from "../../types/employee";
 
 interface EmployeeTableProps<T extends Driver | Conductor> {

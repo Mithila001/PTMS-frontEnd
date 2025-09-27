@@ -16,7 +16,7 @@ COPY index.html ./
 COPY tsconfig.json tsconfig.app.json tsconfig.node.json vite.config.ts ./
 COPY src/ src/
 COPY public/ public/
-COPY .env.production .env.production 
+COPY .env.prod .env.production
 
 # Execute the production build
 # This step bundles the application and embeds environment variables from .env.production
@@ -27,7 +27,7 @@ FROM nginx:stable-alpine
 
 # Copy the custom Nginx configuration. 
 # The configuration ensures correct routing for Single Page Applications (SPAs).
-COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the static application files from the 'builder' stage into the Nginx serving root
 COPY --from=builder /app/dist /usr/share/nginx/html

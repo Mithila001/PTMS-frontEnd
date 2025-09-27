@@ -81,7 +81,13 @@ const LogsPage: React.FC = () => {
           <p className="text-gray-600 mt-1">View and filter system-wide logs</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <SearchAndFilter onFilterChange={setFilters} filterOptions={[]} filterLabel="Filter By" />
+          <SearchAndFilter
+            onFilterChange={setFilters}
+            filterOptions={[]}
+            filterLabel="Filter By"
+            searchTerm={""}
+            selectedFilter={""}
+          />
         </div>
       </div>
       <DataTable data={filteredLogs} columns={logColumns} columnsWithLineBreaks={["details"]} />

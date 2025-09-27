@@ -2,7 +2,6 @@
 import React, { Suspense, lazy, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "../../components/shared/Sidebar";
-import LoginPage from "../LoginPage";
 import LogsPage from "./LogsPage";
 import UserManagementPage from "./user/UserManagementPage";
 

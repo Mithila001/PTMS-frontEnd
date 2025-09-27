@@ -1,5 +1,5 @@
 // src/components/shared/Header.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { XMarkIcon, Bars4Icon } from "@heroicons/react/24/solid";
 

@@ -89,9 +89,6 @@ const RouteMoreInfoPage: React.FC = () => {
 
     if (comparison.changedLogs.length > 0) {
       //console.log("Route details have been changed. The following updates will be saved:");
-      comparison.changedLogs.forEach((log) => {
-        //console.log(`- Property '${log.key}' changed from '${log.oldValue}' to '${log.newValue}'.`);
-      });
     }
 
     try {

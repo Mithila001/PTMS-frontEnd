@@ -1,5 +1,4 @@
 // src/components/shared/Footer.tsx
-import React from "react";
 
 function Footer() {
   return (

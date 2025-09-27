@@ -6,7 +6,6 @@ import { PrivateRoute } from "./components/shared/PrivateRoute";
 // Import all your page components
 import DashboardPage from "./pages/admin/DashboardPage";
 import LoginPage from "./pages/LoginPage";
-import DisplayBusDataPage from "./pages/DisplayBusDataPage";
 import BusMoreInfoPage from "./pages/admin/busManagement/BusMoreInfoPage";
 import RegisterNewBusPage from "./pages/admin/busManagement/RegisterNewBusPage";
 import RouteMoreInfoPage from "./pages/admin/routeManagment/RouteMoreInfoPage";
@@ -41,7 +40,6 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/showBuses" element={<DisplayBusDataPage />} />
             {/* If the user is not logged in and tries to access '/', redirect them to login */}
             {!isLoggedIn && <Route path="/" element={<Navigate to="/login" replace />} />}
             {/* Protected admin area mounted under /admin/* */}

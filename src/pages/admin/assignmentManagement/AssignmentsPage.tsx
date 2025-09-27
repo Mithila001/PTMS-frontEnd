@@ -120,6 +120,8 @@ const AssignmentsPage: React.FC = () => {
             showSearchResults={false}
             searchInputPlaceholder="By Date"
             showDropdownFilter={false}
+            searchTerm={filters.searchTerm}
+            selectedFilter=""
           />
           <PrimaryButton onClick={() => handleAddNewAssignment()}>Add New Assignment</PrimaryButton>
         </div>

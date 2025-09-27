@@ -24,7 +24,6 @@ const emptyRoute: Omit<Route, "id"> = {
 const AddRoutePage: React.FC = () => {
   const [route, setRoute] = useState<Omit<Route, "id">>(emptyRoute);
   const [loading, setLoading] = useState<boolean>(false);
-  const [isWktValid, setIsWktValid] = useState<boolean>(true);
   const [routePath, setRoutePath] = useState<L.LatLngExpression[]>([]);
   const defaultCenter: L.LatLngExpression = [6.926591, 79.838035];
 
@@ -60,10 +59,8 @@ const AddRoutePage: React.FC = () => {
 
     if (isValid) {
       setRoutePath(parsedPath);
-      setIsWktValid(true);
     } else {
       showToast("Invalid WKT format. Please ensure it is a valid LINESTRING.", "error");
-      setIsWktValid(false);
     }
   };
 

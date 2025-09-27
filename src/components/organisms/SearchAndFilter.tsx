@@ -32,7 +32,6 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   showDropdownFilter = true,
   searchInputPlaceholder = "Search...",
   searchResults = [], // <-- Now receiving searchResults from props
-  loading = false,
 }) => {
   // No local state is needed here anymore!
   // useBusSearch is also removed from this component

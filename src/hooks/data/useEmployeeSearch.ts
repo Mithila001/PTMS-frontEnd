@@ -6,7 +6,6 @@ import type {
   ConductorSearchResult,
 } from "../../types/employee";
 import { searchDrivers } from "../../api/driverService";
-import { searchConductors } from "../../api/conductorService";
 
 // Defines the possible search types for our hook.
 export type EmployeeSearchType = "all" | "driver" | "conductor";
@@ -79,14 +78,14 @@ export const useEmployeeSearch = <T extends EmployeeSearchType>(
               licenseNumber
             )) as EmployeeResults<T>;
             break;
-          case "conductor":
-            data = (await searchConductors(
-              nicNumber,
-              name,
-              contactNumber,
-              licenseNumber
-            )) as EmployeeResults<T>;
-            break;
+          // case "conductor":
+          //   data = (await searchConductors(
+          //     nicNumber,
+          //     name,
+          //     contactNumber,
+          //     licenseNumber
+          //   )) as EmployeeResults<T>;
+          //   break;
           case "all":
           default:
             data = (await searchAllEmployees(nicNumber, name, contactNumber)) as EmployeeResults<T>;

@@ -1,5 +1,3 @@
-import type { ValidationRules } from "../types/common";
-
 // A type to define the validation schema for the base Employee object
 export const employeeValidationSchema = {
   firstName: { required: true, minLength: 2 },

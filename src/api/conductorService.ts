@@ -1,4 +1,4 @@
-import type { Conductor, EmployeeSearchResult, PaginatedEmployeeResponse } from "../types/employee";
+import type { Conductor, PaginatedEmployeeResponse } from "../types/employee";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 

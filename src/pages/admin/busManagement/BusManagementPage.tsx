@@ -8,7 +8,6 @@ import { useApplicationData } from "../../../contexts/ApplicationDataContext";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
 import { useToast } from "../../../contexts/ToastContext";
 import { useBusData } from "../../../hooks/data/useBusData";
-import { useAuth } from "../../../contexts/AuthContext";
 
 const BusManagementPage: React.FC = () => {
   const [filters, setFilters] = useState({ searchTerm: "", selectedFilter: "" });

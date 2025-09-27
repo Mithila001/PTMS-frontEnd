@@ -1,10 +1,9 @@
 // src/pages/admin/assignmentManagement/AddScheduledTripPage.tsx
 
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { createScheduledTrip } from "../../../api/scheduledTripService";
 import type { ScheduledTrip } from "../../../types/assignment";
 import LoadingSpinner from "../../../components/atoms/LoadingSpinner";
-import TextInput from "../../../components/atoms/TextInput";
 import PrimaryButton from "../../../components/atoms/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import type { Route } from "../../../types/route";
@@ -71,14 +70,6 @@ const AddScheduledTripPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleTextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setScheduledTrip((prevTrip) => ({
-      ...prevTrip,
-      [id]: value,
-    }));
   };
 
   if (loading) {

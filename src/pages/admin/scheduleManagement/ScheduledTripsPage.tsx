@@ -116,6 +116,8 @@ const ScheduledTripsPage: React.FC = () => {
         </div>
         <div className={actionContainerStyles}>
           <SearchAndFilter
+            searchTerm={filters.searchTerm}
+            selectedFilter=""
             onFilterChange={setFilters}
             filterOptions={[]} // No dropdown filter for now
             filterLabel="Filter By"
