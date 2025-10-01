@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // This is the CRITICAL ADDITION for state synchronization.
   useEffect(() => {
     if (user) {
+      console.log("User roles changed:", user.roles);
       setHighestRole(determineHighestRole(user.roles));
     } else {
       setHighestRole(null);

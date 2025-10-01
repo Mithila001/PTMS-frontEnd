@@ -8,7 +8,7 @@ function Header() {
   const { pathname } = useLocation();
 
   const links = [
-    { to: "/", label: "Home" },
+    { to: "/", label: "" },
     // { to: "/showData", label: "Show Data" },
     // { to: "/pages/FormPage", label: "Form Page" },
     // { to: "/showBuses", label: "Bus Data" },

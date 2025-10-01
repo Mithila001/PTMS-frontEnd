@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from "react";
 import SearchAndFilter from "../../components/organisms/SearchAndFilter";
 import DataTable, { type Column } from "../../components/molecules/DataTable";
-import { getAllLogs } from "../../api/logService";
+import { getRecentGlobalAuditLogs } from "../../api/logService";
 import { formatLogsForDisplay } from "../../utils/logFormatter";
-import type { DisplayLog } from "../../types/logs";
+import type { DisplayLog, IAuditLog } from "../../types/logs";
 import LoadingSpinner from "../../components/atoms/LoadingSpinner";
 import { useToast } from "../../contexts/ToastContext";
 
@@ -19,7 +19,8 @@ const LogsPage: React.FC = () => {
   useEffect(() => {
     const fetchAndFormatLogs = async () => {
       try {
-        const rawLogs = await getAllLogs();
+        // Use the new, better-named function
+        const rawLogs: IAuditLog[] = await getRecentGlobalAuditLogs();
         const formattedLogs = formatLogsForDisplay(rawLogs);
         setLogs(formattedLogs);
       } catch (e: unknown) {

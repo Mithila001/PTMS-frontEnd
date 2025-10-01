@@ -25,8 +25,15 @@ const fullMenu = [
 const userMenu = [
   { to: "buses", label: "Buses", icon: "🚌" },
   { to: "routes", label: "Routes", icon: "🗺️" },
+];
+
+const operationsManagerMenu = [
+  { to: "overview", label: "Overview", icon: "📊" },
+  { to: "buses", label: "Buses", icon: "🚌" },
   { to: "employees", label: "Employees", icon: "👩‍✈️" },
+  { to: "routes", label: "Routes", icon: "🗺️" },
   { to: "assignments", label: "Assignments", icon: "🗂️" },
+  { to: "scheduled-trips", label: "Scheduled Trips", icon: "📅" },
 ];
 
 const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
@@ -34,7 +41,17 @@ const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
   const { highestRole } = useAuth();
 
   // Determine which menu to display based on the user's role
-  const menuToDisplay = highestRole === "ROLE_ADMIN" ? fullMenu : userMenu;
+  const menuToDisplay = (() => {
+    switch (highestRole) {
+      case "ROLE_ADMIN":
+        return fullMenu;
+      case "ROLE_OPERATIONS_MANAGER":
+        return operationsManagerMenu;
+      case "ROLE_USER":
+      default:
+        return userMenu;
+    }
+  })();
 
   return (
     <>

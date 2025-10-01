@@ -23,6 +23,22 @@ export interface DisplayLog {
   username: string;
   actionType: string;
   entityType: string;
-  entityId: number | null;
+  entityId: number;
   details: string;
+}
+
+export interface IChangeDetail {
+  fieldName: string;
+  oldValue: string | null;
+  newValue: string | null;
+}
+
+export interface IAuditLog {
+  revisionId: number;
+  username: string;
+  timestamp: string;
+  entityId: number;
+  revisionType: string;
+  summary: string;
+  changes: IChangeDetail[];
 }
