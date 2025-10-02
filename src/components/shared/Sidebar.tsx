@@ -1,7 +1,7 @@
 // F:\OnGoinProject\Transport Management System\ptms-frontEnd\src\components\shared\Sidebar.tsx
 
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
@@ -38,7 +38,8 @@ const operationsManagerMenu = [
 
 const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
   // Get the highest role from the auth context
-  const { highestRole } = useAuth();
+  const { highestRole, logout: clientLogout } = useAuth();
+  const navigate = useNavigate();
   console.log("Highest Role:", highestRole); // Debugging line
 
   // Determine which menu to display based on the user's role
@@ -53,6 +54,17 @@ const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
         return userMenu;
     }
   })();
+
+  const handleLogout = async () => {
+    try {
+      // 1. Call the logout function from AuthContext (which hits the backend and clears state)
+      await clientLogout();
+      window.location.replace("/login");
+    } catch (error) {
+      console.error("Failed to process logout:", error);
+      window.location.replace("/login");
+    }
+  };
 
   return (
     <>
@@ -109,10 +121,7 @@ const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
             type="button"
             className="w-full px-4 py-3 flex items-center gap-3 text-red-400 hover:bg-red-600 hover:text-white transition-all duration-200 rounded-lg"
             onClick={() => {
-              // placeholder: replace with real logout flow
-              // keep simple here — you can wire to auth context
-              // eslint-disable-next-line no-alert
-              alert("Logout clicked");
+              handleLogout();
             }}
           >
             <span className="text-lg">🚪</span>

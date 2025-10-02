@@ -12,7 +12,7 @@ export type Role = {
 export type User = {
   id: number;
   username: string;
-  roles: Role[];
+  roles: string[];
 };
 
 /**

@@ -37,22 +37,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   /**
    * Determines the highest role from a user's roles array.
    */
-  const determineHighestRole = (roles: Role[]): string | null => {
+  const determineHighestRole = (roles: string[]): string | null => {
     console.log("Determining highest role from roles:", roles);
     if (!roles || roles.length === 0) {
+      console.log("No roles found for user.");
       return null;
     }
 
-    if (roles.length === 1) {
-      return roles[0].toString();
-    }
+    // You don't need the roles.length === 1 check anymore, the loop handles it.
 
     // Find the first role in the user's list that matches our hierarchy
     for (const hierarchyRole of ROLE_HIERARCHY) {
-      if (roles.some((userRole) => userRole.name === hierarchyRole)) {
+      console.log("Checking for role in hierarchy:", hierarchyRole);
+      console.log("Checking for role in ROLE_HIERARCHY:", ROLE_HIERARCHY);
+
+      // --- FIX IS HERE: Use roles.includes() for a clean string-to-string check ---
+      if (roles.includes(hierarchyRole)) {
+        console.log("Highest role determined:", hierarchyRole);
         return hierarchyRole;
       }
     }
+
+    console.log("No matching roles found in hierarchy.");
     return null;
   };
 
@@ -109,7 +115,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Checks if the user has a specific role
   const hasRole = (roleName: string): boolean => {
-    return user ? user.roles.some((role) => role.name === roleName) : false;
+    return user ? user.roles.some((role) => role === roleName) : false;
   };
 
   // The value that will be provided by the context
