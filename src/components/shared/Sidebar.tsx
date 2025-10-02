@@ -39,6 +39,7 @@ const operationsManagerMenu = [
 const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
   // Get the highest role from the auth context
   const { highestRole } = useAuth();
+  console.log("Highest Role:", highestRole); // Debugging line
 
   // Determine which menu to display based on the user's role
   const menuToDisplay = (() => {

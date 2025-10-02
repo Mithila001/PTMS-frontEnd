@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
    * Determines the highest role from a user's roles array.
    */
   const determineHighestRole = (roles: Role[]): string | null => {
+    console.log("Determining highest role from roles:", roles);
     if (!roles || roles.length === 0) {
       return null;
     }
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // This is the CRITICAL ADDITION for state synchronization.
   useEffect(() => {
     if (user) {
-      console.log("User roles changed:", user.roles);
+      console.log("User :", user);
       setHighestRole(determineHighestRole(user.roles));
     } else {
       setHighestRole(null);
