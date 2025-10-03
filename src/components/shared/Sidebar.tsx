@@ -1,7 +1,7 @@
 // F:\OnGoinProject\Transport Management System\ptms-frontEnd\src\components\shared\Sidebar.tsx
 
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
@@ -39,7 +39,6 @@ const operationsManagerMenu = [
 const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
   // Get the highest role from the auth context
   const { highestRole, logout: clientLogout } = useAuth();
-  const navigate = useNavigate();
   console.log("Highest Role:", highestRole); // Debugging line
 
   // Determine which menu to display based on the user's role

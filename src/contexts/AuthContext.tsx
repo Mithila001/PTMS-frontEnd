@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { fetchCurrentUser, login, logout } from "../api/authService";
-import type { Role, User, UserCredentials } from "../types/user";
+import type { User, UserCredentials } from "../types/user";
 
 // Define the shape of our authentication context
 interface AuthContextType {
